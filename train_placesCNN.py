@@ -135,7 +135,6 @@ def main():
 
         # train for one epoch
         train(train_loader, model, criterion, optimizer, epoch)
-
         # evaluate on validation set
         prec1 = validate(val_loader, model, criterion)
 
@@ -175,6 +174,8 @@ def train(train_loader, model, criterion, optimizer, epoch):
         # measure accuracy and record loss
         prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
         losses.update(loss.item(), input.size(0))
+        print(prec1)
+        print(input)
         top1.update(prec1[0], input.size(0))
         top5.update(prec5[0], input.size(0))
 
@@ -220,8 +221,7 @@ def validate(val_loader, model, criterion):
         # measure accuracy and record loss
         prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
         losses.update(loss.data[0], input.size(0))
-        print(prec1)
-        print(input)
+
         top1.update(prec1[0], input.size(0))
         top5.update(prec5[0], input.size(0))
 
