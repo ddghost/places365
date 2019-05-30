@@ -20,6 +20,8 @@ import torchvision.models as models
 
 import wideresnet
 import pdb
+import SENet
+
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
@@ -70,7 +72,7 @@ def main():
         # a customized resnet model with last feature map size as 14x14 for better class activation mapping
         model  = wideresnet.resnet50(num_classes=args.num_classes)
     elif args.arch.lower().startswith('se'):
-        print('hey')
+        model  = SENet.se_resnet50(num_classes=args.num_classes)
         return 
     else:
         model = models.__dict__[args.arch](num_classes=args.num_classes)
