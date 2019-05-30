@@ -3,9 +3,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 
-def conv3x3(in_channels, out_channels, stride=1):
-    return nn.Conv2d(in_channels, out_channels, kernel_size=3, 
-            stride=stride, padding=1, bias=False)
+
+def conv3x3(in_planes, out_planes, stride=1):
+    "3x3 convolution with padding"
+    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
+                     padding=1, bias=False)
 
 class se_layer(nn.Module):
     def __init__(self, channel, reduction=16):
@@ -25,11 +27,11 @@ class se_layer(nn.Module):
         y = y.view(batchSize, channelNum, 1, 1)
         return x * y
 
-class se_bottleneck(nn.Module):
+class Bottleneck(nn.Module):
     expansion = 4
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
-        super(se_bottleneck, self).__init__()
+        super(Bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
@@ -38,7 +40,6 @@ class se_bottleneck(nn.Module):
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
         self.relu = nn.ReLU(inplace=True)
-        self.se = se_layer(planes * self.expansion)
         self.downsample = downsample
         self.stride = stride
 
@@ -58,12 +59,11 @@ class se_bottleneck(nn.Module):
 
         if self.downsample is not None:
             residual = self.downsample(x)
-        #out = self.se(out)
+
         out += residual
         out = self.relu(out)
 
         return out
-
 
 
 class ResNet(nn.Module):
@@ -133,7 +133,7 @@ def se_resnet50(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet(se_bottleneck, [3, 4, 6, 3], **kwargs)
+    model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
         print('!!!!!!!!!!!!!!!!!!!!!!!!!')
     
