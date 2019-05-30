@@ -1,7 +1,19 @@
-import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import math
+import torch.utils.model_zoo as model_zoo
+
+
+__all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
+           'resnet152']
+
+
+model_urls = {
+    'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',
+    'resnet34': 'https://download.pytorch.org/models/resnet34-333f7ec4.pth',
+    'resnet50': 'https://download.pytorch.org/models/resnet50-19c8e357.pth',
+    'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
+    'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
+}
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -9,23 +21,38 @@ def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
                      padding=1, bias=False)
 
-class se_layer(nn.Module):
-    def __init__(self, channel, reduction=16):
-        super(se_layer, self).__init__()
-        self.avg_pool = nn.AdaptiveAvgPool2d(1)
-        self.fc1 = nn.Linear(channel, channel // reduction, bias=False)
+
+class BasicBlock(nn.Module):
+    expansion = 1
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None):
+        super(BasicBlock, self).__init__()
+        self.conv1 = conv3x3(inplanes, planes, stride)
+        self.bn1 = nn.BatchNorm2d(planes)
         self.relu = nn.ReLU(inplace=True)
-        self.fc2 = nn.Linear(channel // reduction, channel, bias=False)
-        self.sigmoid = nn.Sigmoid()
+        self.conv2 = conv3x3(planes, planes)
+        self.bn2 = nn.BatchNorm2d(planes)
+        self.downsample = downsample
+        self.stride = stride
 
     def forward(self, x):
-        batchSize, channelNum, _, _ = x.size()
-        y = self.avg_pool(x)
-        y = y.view(batchSize, channelNum)
-        y = self.relu(self.fc1(y))
-        y = self.sigmoid(self.fc2(y))
-        y = y.view(batchSize, channelNum, 1, 1)
-        return x * y
+        residual = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+
+        out = self.conv2(out)
+        out = self.bn2(out)
+
+        if self.downsample is not None:
+            residual = self.downsample(x)
+
+        out += residual
+        out = self.relu(out)
+
+        return out
+
 
 class Bottleneck(nn.Module):
     expansion = 4
@@ -40,7 +67,6 @@ class Bottleneck(nn.Module):
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
         self.relu = nn.ReLU(inplace=True)
-        self.se = se_layer(planes * self.expansion)
         self.downsample = downsample
         self.stride = stride
 
@@ -57,7 +83,7 @@ class Bottleneck(nn.Module):
 
         out = self.conv3(out)
         out = self.bn3(out)
-        out = self.se(out)
+
         if self.downsample is not None:
             residual = self.downsample(x)
 
@@ -128,14 +154,17 @@ class ResNet(nn.Module):
 
         return x
 
+
+
+
 def se_resnet50(pretrained=False, **kwargs):
-    """Constructs a se_ResNet-50 model.
+    """Constructs a ResNet-50 model.
 
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        print('!!!!!!!!!!!!!!!!!!!!!!!!!')
-    
+        model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
     return model
+
