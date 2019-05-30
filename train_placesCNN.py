@@ -56,7 +56,7 @@ parser.add_argument('--pretrained', dest='pretrained', action='store_false',
                     help='use pre-trained model')
 parser.add_argument('--num_classes',default=365, type=int, help='num of class in the model')
 parser.add_argument('--dataset',default='places365',help='which dataset to train')
-device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+device_ids = [0,1]
 best_prec1 = 0
 
 
@@ -73,10 +73,10 @@ def main():
         model = models.__dict__[args.arch](num_classes=args.num_classes)
 
     if args.arch.lower().startswith('alexnet') or args.arch.lower().startswith('vgg'):
-        model.features = torch.nn.DataParallel(model.features)
-        model.to(device)
+        model.features = torch.nn.DataParallel(model.features, device_ids)
+        model.cuda()
     else:
-        model = torch.nn.DataParallel(model).to(device)
+        model = torch.nn.DataParallel(model, device_ids).cuda()
     
     if args.arch.lower().startswith('se'):
         print('hey')
@@ -125,7 +125,7 @@ def main():
         num_workers=args.workers, pin_memory=True)
 
     # define loss function (criterion) and pptimizer
-    criterion = nn.CrossEntropyLoss().to(device)
+    criterion = nn.CrossEntropyLoss().cuda()
 
     optimizer = torch.optim.SGD(model.parameters(), args.lr,
                                 momentum=args.momentum,
@@ -169,7 +169,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         # measure data loading time
         data_time.update(time.time() - end)
 
-        target = target.to(device, non_blocking=True)
+        target = target.cuda(non_blocking=True)
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
         # compute output
@@ -213,7 +213,7 @@ def validate(val_loader, model, criterion):
 
     end = time.time()
     for i, (input, target) in enumerate(val_loader):
-        target = target.to(device, non_blocking=True)
+        target = target.cuda(non_blocking=True)
         input_var = torch.autograd.Variable(input, volatile=True)
         target_var = torch.autograd.Variable(target, volatile=True)
 
