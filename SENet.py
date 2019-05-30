@@ -85,3 +85,14 @@ def se_resnet50(pretrained=False, **kwargs):
         #model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
     return model
 
+def se_resnet152(pretrained=False, **kwargs):
+    """Constructs a ResNet-50 model.
+
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(SEBottleneck, [3, 8, 36, 3], **kwargs)
+    if pretrained:
+        pass
+        #model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
+    return model
