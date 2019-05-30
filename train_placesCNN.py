@@ -176,8 +176,6 @@ def train(train_loader, model, criterion, optimizer, epoch):
         target = target.cuda(non_blocking=True)
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
-        input_var = torch.autograd.Variable(input)
-        target_var = torch.autograd.Variable(target)
         # compute output
         output = model(input_var)
         loss = criterion(output, target_var)
