@@ -77,14 +77,14 @@ def main():
     else:
         model = models.__dict__[args.arch](num_classes=args.num_classes)
 
+    print('#parameters:', sum(param.numel() for param in model.parameters()))
+
     if args.arch.lower().startswith('alexnet') or args.arch.lower().startswith('vgg'):
         model.features = torch.nn.DataParallel(model.features,device_ids)
         model.cuda()
     else:
         model = torch.nn.DataParallel(model,device_ids).cuda()
     
-
-
     print(model)
     # optionally resume from a checkpoint
     if args.resume:
@@ -203,7 +203,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
                   'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
                    epoch, i, len(train_loader), batch_time=batch_time,
                    data_time=data_time, loss=losses, top1=top1, top5=top5))
-        bar.output(i)
+        bar.output(i+1)
     print()
 
 def validate(val_loader, model, criterion):
