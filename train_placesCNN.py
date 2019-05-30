@@ -58,7 +58,7 @@ parser.add_argument('--pretrained', dest='pretrained', action='store_false',
                     help='use pre-trained model')
 parser.add_argument('--num_classes',default=365, type=int, help='num of class in the model')
 parser.add_argument('--dataset',default='places365',help='which dataset to train')
-device_ids = [0,1]
+device_ids = [0]
 best_prec1 = 0
 
 
