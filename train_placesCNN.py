@@ -73,7 +73,6 @@ def main():
         model  = wideresnet.resnet50(num_classes=args.num_classes)
     elif args.arch.lower().startswith('se'):
         model  = SENet.se_resnet50(num_classes=args.num_classes)
-        return 
     else:
         model = models.__dict__[args.arch](num_classes=args.num_classes)
 
