@@ -27,7 +27,7 @@ class se_layer(nn.Module):
 class se_bottleneck(nn.Module):
     expansion = 4
     def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16):
-        super(bottleneck, self).__init__()
+        super(se_bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
