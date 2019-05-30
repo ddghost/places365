@@ -219,7 +219,8 @@ def validate(val_loader, model, criterion):
     model.eval()
 
     end = time.time()
-	with torch.no_grad():
+
+    with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
             target = target.cuda(non_blocking=True)
 
