@@ -11,8 +11,8 @@ class progressbar(object):
         
 	def clear(self):
 		spaceStr = ' ' * self.lastOutputLen
-		print('\r%s\r' % (spaceStr),end='' )
-		print('\r' ,end='' )
+		print('\r%s' % (spaceStr),end='' )
+		
 	def output(self, nowStep):
 		
 		self.progressTime += time.perf_counter() - self.lastTime
@@ -26,7 +26,7 @@ class progressbar(object):
 		barLen = int(rate ) // 2
 		barStr = '#' * barLen 
 		self.clear()
-		outputStr = '%s%s%.2f%% [%.2fs/%.2fs]%s' % \
+		outputStr = '\r%s%s%.2f%% [%.2fs/%.2fs]%s' % \
 					(self.frontStr, barStr, rate, self.progressTime, predictRestTime, self.backStr)
 		self.lastOutputLen = len(outputStr)
 		print(outputStr, end='' )
