@@ -58,7 +58,7 @@ class se_bottleneck(nn.Module):
 
         if self.downsample is not None:
             residual = self.downsample(x)
-        out = self.se(out)
+        #out = self.se(out)
         out += residual
         out = self.relu(out)
 
@@ -136,5 +136,5 @@ def se_resnet50(pretrained=False, **kwargs):
     model = ResNet(se_bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
         print('!!!!!!!!!!!!!!!!!!!!!!!!!')
-
+    
     return model
