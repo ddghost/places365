@@ -143,10 +143,10 @@ def main():
         adjust_learning_rate(optimizer, epoch)
 
         # train for one epoch
-        
+        train(train_loader, model, criterion, optimizer, epoch)
         # evaluate on validation set
         prec1 = validate(val_loader, model, criterion)
-        train(train_loader, model, criterion, optimizer, epoch)
+
         # remember best prec@1 and save checkpoint
         is_best = prec1 > best_prec1
         best_prec1 = max(prec1, best_prec1)
