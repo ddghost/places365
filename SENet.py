@@ -40,6 +40,7 @@ class Bottleneck(nn.Module):
         self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * 4)
         self.relu = nn.ReLU(inplace=True)
+        self.se = se_layer(planes * self.expansion)
         self.downsample = downsample
         self.stride = stride
 
@@ -56,7 +57,7 @@ class Bottleneck(nn.Module):
 
         out = self.conv3(out)
         out = self.bn3(out)
-
+        out = self.se(out)
         if self.downsample is not None:
             residual = self.downsample(x)
 
