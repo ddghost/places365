@@ -85,7 +85,7 @@ def main():
     else:
         model = torch.nn.DataParallel(model, device_ids).cuda()
     
-    #print(model)
+    print(model)
 
     # optionally resume from a checkpoint
     if args.resume:
