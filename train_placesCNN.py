@@ -56,7 +56,7 @@ parser.add_argument('--pretrained', dest='pretrained', action='store_false',
                     help='use pre-trained model')
 parser.add_argument('--num_classes',default=365, type=int, help='num of class in the model')
 parser.add_argument('--dataset',default='places365',help='which dataset to train')
-
+device = 
 best_prec1 = 0
 
 
@@ -77,6 +77,11 @@ def main():
         model.cuda()
     else:
         model = torch.nn.DataParallel(model).cuda()
+    
+    if args.arch.lower().startswith('se'):
+        print('hey')
+        return 
+
     print(model)
     # optionally resume from a checkpoint
     if args.resume:
