@@ -12,7 +12,7 @@ class progressbar(object):
 	def clear(self):
 		spaceStr = ' ' * self.lastOutputLen
 		print('\r%s\r' % (spaceStr),end='' )
-		
+		print('\r' ,end='' )
 	def output(self, nowStep):
 		
 		self.progressTime += time.perf_counter() - self.lastTime
