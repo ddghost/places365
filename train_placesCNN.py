@@ -69,7 +69,7 @@ def main():
     if args.arch.lower().startswith('wideresnet'):
         # a customized resnet model with last feature map size as 14x14 for better class activation mapping
         model  = wideresnet.resnet50(num_classes=args.num_classes)
-	elif args.arch.lower().startswith('se'):
+    elif args.arch.lower().startswith('se'):
         print('hey')
         return 
     else:
