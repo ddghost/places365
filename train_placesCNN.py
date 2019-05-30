@@ -63,6 +63,7 @@ device_ids = [0,1,2,3]
 best_prec1 = 0
 
 
+
 def main():
     global args, best_prec1
     args = parser.parse_args()
@@ -158,6 +159,7 @@ def main():
         }, is_best, args.arch.lower())
 
 
+
 def train(train_loader, model, criterion, optimizer, epoch):
     batch_time = AverageMeter()
     data_time = AverageMeter()
@@ -169,6 +171,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
     model.train()
     bar = progressbar.progressbar(len(train_loader))
     end = time.time()
+    start = time.perf_counter()
     for i, (input, target) in enumerate(train_loader):
         # measure data loading time
         data_time.update(time.time() - end)
@@ -194,7 +197,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         # measure elapsed time
         batch_time.update(time.time() - end)
         end = time.time()
-        bar.clear()
+        #bar.clear()
         if i % args.print_freq == 0:
             print('\rEpoch: [{0}][{1}/{2}]\t'
                   'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
@@ -204,8 +207,9 @@ def train(train_loader, model, criterion, optimizer, epoch):
                   'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
                    epoch, i, len(train_loader), batch_time=batch_time,
                    data_time=data_time, loss=losses, top1=top1, top5=top5))
-        bar.output(i+1)
-    print()
+        #bar.output(i+1)
+    #print()
+    print('Epoch waste time {}s',format(time.perf_counter()- start) )
 
 def validate(val_loader, model, criterion):
     batch_time = AverageMeter()
