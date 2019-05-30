@@ -3,17 +3,9 @@ import math
 import torch.utils.model_zoo as model_zoo
 
 
-__all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
-           'resnet152']
+__all__ = ['se_resnet50']
 
 
-model_urls = {
-    'resnet18': 'https://download.pytorch.org/models/resnet18-5c106cde.pth',
-    'resnet34': 'https://download.pytorch.org/models/resnet34-333f7ec4.pth',
-    'resnet50': 'https://download.pytorch.org/models/resnet50-19c8e357.pth',
-    'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
-    'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
-}
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -165,6 +157,7 @@ def se_resnet50(pretrained=False, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
+        pass
+        #model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
     return model
 

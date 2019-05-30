@@ -80,12 +80,13 @@ def main():
     print('#parameters:', sum(param.numel() for param in model.parameters()))
 
     if args.arch.lower().startswith('alexnet') or args.arch.lower().startswith('vgg'):
-        model.features = torch.nn.DataParallel(model.features,device_ids)
+        model.features = torch.nn.DataParallel(model.features, device_ids)
         model.cuda()
     else:
-        model = torch.nn.DataParallel(model,device_ids).cuda()
+        model = torch.nn.DataParallel(model, device_ids).cuda()
     
-    print(model)
+    #print(model)
+
     # optionally resume from a checkpoint
     if args.resume:
         if os.path.isfile(args.resume):
@@ -195,7 +196,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         end = time.time()
         bar.clear()
         if i % args.print_freq == 0:
-            print('Epoch: [{0}][{1}/{2}]\t'
+            print('\rEpoch: [{0}][{1}/{2}]\t'
                   'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
                   'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
                   'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
