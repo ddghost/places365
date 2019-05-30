@@ -11,6 +11,23 @@ def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
                      padding=1, bias=False)
 
+class SELayer(nn.Module):
+    def __init__(self, channel, reduction=16):
+        super(SELayer, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc1 = nn.Linear(channel, channel // reduction, bias=False)
+        self.relu = nn.ReLU(inplace=True)
+        self.fc2 = nn.Linear(channel // reduction, channel, bias=False)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+        batchSize, channelNum, _, _ = x.size()
+        y = self.avg_pool(x)
+        y = y.view(batchSize, channelNum)
+        y = self.relu(self.fc1(y))
+        y = self.sigmoid(self.fc2(y))
+        y = y.view(batchSize, channelNum, 1, 1)
+        return x * y
 
 
 class SEBottleneck(nn.Module):
