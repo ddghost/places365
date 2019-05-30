@@ -77,10 +77,10 @@ def main():
         model = models.__dict__[args.arch](num_classes=args.num_classes)
 
     if args.arch.lower().startswith('alexnet') or args.arch.lower().startswith('vgg'):
-        model.features = torch.nn.DataParallel(model.features, device_ids)
+        model.features = torch.nn.DataParallel(model.features)
         model.cuda()
     else:
-        model = torch.nn.DataParallel(model, device_ids).cuda()
+        model = torch.nn.DataParallel(model).cuda()
     
 
 
