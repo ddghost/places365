@@ -136,5 +136,5 @@ def se_resnet50(pretrained=False, **kwargs):
     model = ResNet(se_bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
         print('!!!!!!!!!!!!!!!!!!!!!!!!!')
-        return None
+
     return model
