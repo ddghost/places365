@@ -27,17 +27,18 @@ class se_layer(nn.Module):
 
 class se_bottleneck(nn.Module):
     expansion = 4
-    def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16):
+
+    def __init__(self, inplanes, planes, stride=1, downsample=None):
         super(se_bottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
                                padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(planes)
-        self.conv3 = nn.Conv2d(planes, planes * self.expansion, kernel_size=1, bias=False)
-        self.bn3 = nn.BatchNorm2d(planes * self.expansion)
+        self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
+        self.bn3 = nn.BatchNorm2d(planes * 4)
         self.relu = nn.ReLU(inplace=True)
-        self.se = se_layer(planes * self.expansion)
+		self.se = se_layer(planes * self.expansion)
         self.downsample = downsample
         self.stride = stride
 
@@ -54,15 +55,15 @@ class se_bottleneck(nn.Module):
 
         out = self.conv3(out)
         out = self.bn3(out)
-        
-        out = self.se(out)
+
         if self.downsample is not None:
             residual = self.downsample(x)
-
+        out = self.se(out)
         out += residual
         out = self.relu(out)
 
         return out
+
 
 
 class ResNet(nn.Module):
