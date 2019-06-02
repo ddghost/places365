@@ -100,7 +100,7 @@ def main():
                   .format(args.resume, checkpoint['epoch']))
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
-
+    del checkpoint
     cudnn.benchmark = True
 
     # Data loading code
