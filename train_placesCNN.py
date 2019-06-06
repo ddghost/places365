@@ -319,7 +319,7 @@ def checkErrorImage(val_loader, model, criterion):
     model.eval()
 
     end = time.time()
-
+    print(val_loader[0][0].shape,val_loader[0][1])
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
             target = target.cuda(non_blocking=True)
@@ -331,7 +331,7 @@ def checkErrorImage(val_loader, model, criterion):
             # measure accuracy and record loss
             prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
             errorMask1, errorMask5 = getErrorImgMask(output.data, target, topk=(1, 5))
-            print(errorMask1.shape,errorMask1)
+            #print(errorMask1.shape,errorMask1)
             losses.update(loss.item(), input.size(0))
 
             top1.update(prec1.item(), input.size(0))
