@@ -300,4 +300,4 @@ if __name__ == '__main__':
     valdir = os.path.join(args.data, 'val')
     tmp = datasets.ImageFolder(valdir, transforms.Compose([
         ]))
-    print(dir(tmp))
+    print(tmp.class_to_idx)
