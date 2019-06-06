@@ -290,8 +290,8 @@ def accuracy(output, target, topk=(1,)):
     
     res = []
     for k in topk:
-        correct_k = (correct[:k].sum(0) > 0.5).view(-1).sum(0)
-        print(correct_k)
+        #correct_k = correct[:k].view(-1).float().sum(0) 
+        correct_k = (correct[:k].sum(0) > 0.5).view(-1).float().sum(0)
         res.append(correct_k.mul_(100.0 / batch_size))
     return res
 
