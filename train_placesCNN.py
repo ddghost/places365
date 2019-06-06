@@ -139,24 +139,24 @@ def main():
     if args.evaluate:
         validate(val_loader, model, criterion)
         return
+    else:
+        for epoch in range(args.start_epoch, args.epochs):
+            adjust_learning_rate(optimizer, epoch)
 
-    for epoch in range(args.start_epoch, args.epochs):
-        adjust_learning_rate(optimizer, epoch)
+            # train for one epoch
+            train(train_loader, model, criterion, optimizer, epoch)
+            # evaluate on validation set
+            prec1 = validate(val_loader, model, criterion)
 
-        # train for one epoch
-        train(train_loader, model, criterion, optimizer, epoch)
-        # evaluate on validation set
-        prec1 = validate(val_loader, model, criterion)
-
-        # remember best prec@1 and save checkpoint
-        is_best = prec1 > best_prec1
-        best_prec1 = max(prec1, best_prec1)
-        save_checkpoint({
-            'epoch': epoch + 1,
-            'arch': args.arch,
-            'state_dict': model.state_dict(),
-            'best_prec1': best_prec1,
-        }, is_best, args.arch.lower())
+            # remember best prec@1 and save checkpoint
+            is_best = prec1 > best_prec1
+            best_prec1 = max(prec1, best_prec1)
+            save_checkpoint({
+                'epoch': epoch + 1,
+                'arch': args.arch,
+                'state_dict': model.state_dict(),
+                'best_prec1': best_prec1,
+            }, is_best, args.arch.lower())
 
 
 
