@@ -296,6 +296,7 @@ def accuracy(output, target, topk=(1,)):
 
 if __name__ == '__main__':
     #main()
+    global args
     valdir = os.path.join(args.data, 'val')
     tmp = datasets.ImageFolder(valdir, transforms.Compose([
             transforms.Resize(256),
