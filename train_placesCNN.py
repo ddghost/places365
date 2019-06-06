@@ -314,12 +314,26 @@ def checkErrorImage(val_loader, model, criterion):
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
-
+    
     # switch to evaluate mode
     model.eval()
-
+ 
     end = time.time()
-    print(val_loader[0][0].shape,val_loader[0][1])
+
+    global(args.data)
+    valdir = os.path.join(args.data, 'val')
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                     std=[0.229, 0.224, 0.225])
+    tmp = datasets.ImageFolder(valdir, transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            normalize,
+        ]))
+    print(tmp[0][0].shape,val_loader[0][1])
+
+
+
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
             target = target.cuda(non_blocking=True)
