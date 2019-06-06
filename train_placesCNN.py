@@ -137,7 +137,7 @@ def main():
                                 weight_decay=args.weight_decay)
 
     if args.evaluate:
-        validate(val_loader, model, criterion)
+        checkErrorImage(val_loader, model, criterion)
         return
     else:
         for epoch in range(args.start_epoch, args.epochs):
@@ -294,10 +294,63 @@ def accuracy(output, target, topk=(1,)):
     return res
 
 
+def getErrorImgMask(output, target, topk=(1,)):
+    """Computes the precision@k for the specified values of k"""
+    maxk = max(topk)
+    batch_size = target.size(0)
+    
+    _, pred = output.topk(maxk, 1, True, True)
+    pred = pred.t()
+    correct = pred.eq(target.view(1, -1).expand_as(pred))
+    mask = []
+    for k in topk:
+        print(correct.shape,correct[:k].sum(0).shape,correct[:k].sum(1).shape)
+		break
+        correct_k = correct[:k].view(-1).float().sum(0) 
+
+    return mask
+
+
+
+def checkErrorImage(val_loader, model, criterion):
+        batch_time = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+    top5 = AverageMeter()
+
+    # switch to evaluate mode
+    model.eval()
+
+    end = time.time()
+
+    with torch.no_grad():
+        for i, (input, target) in enumerate(val_loader):
+            target = target.cuda(non_blocking=True)
+
+            # compute output
+            output = model(input)
+            loss = criterion(output, target)
+
+            # measure accuracy and record loss
+            prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
+            errorMask = getErrorImgMask(output.data, target, topk=(1, 5))
+
+            losses.update(loss.item(), input.size(0))
+
+            top1.update(prec1.item(), input.size(0))
+            top5.update(prec5.item(), input.size(0))
+
+            # measure elapsed time
+            batch_time.update(time.time() - end)
+            end = time.time()
+
+
+    print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
+          .format(top1=top1, top5=top5))
+
+    return top1.avg
+
+
 if __name__ == '__main__':
-    #main()
-    args = parser.parse_args()
-    valdir = os.path.join(args.data, 'val')
-    tmp = datasets.ImageFolder(valdir, transforms.Compose([
-        ]))
-    print(tmp.class_to_idx)
+    main()
+
