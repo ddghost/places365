@@ -304,10 +304,7 @@ def getErrorImgMask(output, target, topk=(1,)):
     correct = pred.eq(target.view(1, -1).expand_as(pred))
     mask = []
     for k in topk:
-        print(correct.shape,correct[:k].sum(0).shape,correct[:k].sum(1).shape)
-        break
-        correct_k = correct[:k].view(-1).float().sum(0) 
-
+        mask.append(correct[:k].sum(0) == 1)
     return mask
 
 
@@ -333,8 +330,8 @@ def checkErrorImage(val_loader, model, criterion):
 
             # measure accuracy and record loss
             prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
-            errorMask = getErrorImgMask(output.data, target, topk=(1, 5))
-
+            errorMask1, errorMask5 = getErrorImgMask(output.data, target, topk=(1, 5))
+            print(errorMask1.shape,errorMask1)
             losses.update(loss.item(), input.size(0))
 
             top1.update(prec1.item(), input.size(0))
