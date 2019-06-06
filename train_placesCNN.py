@@ -313,7 +313,7 @@ def getErrorImgMask(output, target, topk=(1,)):
 
 
 def checkErrorImage(val_loader, model, criterion):
-        batch_time = AverageMeter()
+    batch_time = AverageMeter()
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
