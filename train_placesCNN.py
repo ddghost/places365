@@ -299,9 +299,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     valdir = os.path.join(args.data, 'val')
     tmp = datasets.ImageFolder(valdir, transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            normalize,
         ]))
     print(dir(tmp))
