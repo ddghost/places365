@@ -330,7 +330,7 @@ def checkErrorImage(val_loader, model, criterion):
             transforms.ToTensor(),
             normalize,
         ]))
-    print(tmp[0][0].shape,val_loader[0][1])
+    print(tmp[0][0].shape,tmp[0][1])
 
 
 
