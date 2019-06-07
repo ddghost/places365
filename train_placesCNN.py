@@ -314,7 +314,6 @@ def getClassNameByTensor(checkTensor, dataSet):
     msg = ''
     for i in range(checkTensor.size(0) ):
         msg += dataSet.classes[i]
-    print msg
     return msg
 
 def checkErrorImage(val_loader, model, criterion):
