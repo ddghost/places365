@@ -350,9 +350,9 @@ def checkErrorImage(val_loader, model, criterion):
             errorInfos1, errorInfos5 = getErrorImgInfo(output.data, target, topk=(1, 5))
             print(errorInfos5[0].size(0))
             for j in range(errorInfos5[0].size(0)):
-                imgIndex = errorInfos5[j][0] + i * 256
-                top5Result = errorInfos5[j][1]
-                realResult = errorInfos5[j][2]
+                imgIndex = errorInfos5[0][j] + i * 256
+                top5Result = errorInfos5[1][j]
+                realResult = errorInfos5[2][j]
                 print(imgIndex, top5Result, realResult)
                 return 
                 errorImgFile.write(imgIndex, top5Result, realResult)
