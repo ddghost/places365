@@ -294,7 +294,7 @@ def accuracy(output, target, topk=(1,)):
     return res
 
 
-def getErrorImgMask(output, target, topk=(1,)):
+def getErrorImgIndex(output, target, topk=(1,)):
     """Computes the precision@k for the specified values of k"""
     maxk = max(topk)
     batch_size = target.size(0)
@@ -303,12 +303,12 @@ def getErrorImgMask(output, target, topk=(1,)):
     pred = pred.t()
     correct = pred.eq(target.view(1, -1).expand_as(pred))
     pred = pred.t()
-    masks = []
+    indexs = []
     for k in topk:
         mask = (correct[:k].sum(0) == 1)
-        print(mask.shape,pred.shape,pred[mask].shape,target.shape)
-     
-        masks.append(mask)
+        errorImgIndex = range(batch_size)[mask]
+        print(errorImgIndex.shape)
+        indexs.append(errorImgIndex)
     return masks
 
 
@@ -337,7 +337,7 @@ def checkErrorImage(val_loader, model, criterion):
     print(tmp[0][0].shape,tmp[0][1])
 
 
-
+    errorImgFile = open('errorImgFile.txt','w')
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
             target = target.cuda(non_blocking=True)
@@ -348,7 +348,8 @@ def checkErrorImage(val_loader, model, criterion):
 
             # measure accuracy and record loss
             prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
-            errorMask1, errorMask5 = getErrorImgMask(output.data, target, topk=(1, 5))
+            errorIndex1, errorIndex5 = getErrorImgIndex(output.data, target, topk=(1, 5))
+            
             #print(errorMask1.shape,errorMask1)
             losses.update(loss.item(), input.size(0))
 
