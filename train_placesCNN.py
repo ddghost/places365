@@ -310,7 +310,12 @@ def getErrorImgInfo(output, target, topk=(1,)):
         infos.append((errorImgIndex,pred[mask],target[mask]))
     return infos
 
-
+def getClassNameByTensor(checkTensor. dataSet):
+    msg = ''
+    for i in range(checkTensor.size(0) ):
+        pass
+	print
+    return msg
 
 def checkErrorImage(val_loader, model, criterion):
     batch_time = AverageMeter()
@@ -322,6 +327,10 @@ def checkErrorImage(val_loader, model, criterion):
     model.eval()
  
     end = time.time()
+    global args
+    valdir = os.path.join(args.data, 'val')
+    valDataSet = datasets.ImageFolder(valdir))
+
 
     errorImgFile = open('errorImgFile.txt','w')
     with torch.no_grad():
@@ -340,9 +349,10 @@ def checkErrorImage(val_loader, model, criterion):
                 imgIndex = errorInfos5[0][j] + i * 256
                 top5Result = errorInfos5[1][j]
                 realResult = errorInfos5[2][j]
-                print('i:', imgIndex,' top5 result:', top5Result,' real Result', realResult)
+                errorImgName = valDataSet.samples[imgIndex][0]
+                print(errorImgName,'top5 result:', top5Result,'real Result', realResult)
                 return 
-                errorImgFile.write('i:', imgIndex,' top5 result:', top5Result,' real Result', realResult)
+                errorImgFile.write(errorImgName,'top5 result:', top5Result,'real Result', realResult)
 
             #print(errorMask1.shape,errorMask1)
             losses.update(loss.item(), input.size(0))
