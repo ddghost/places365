@@ -306,7 +306,7 @@ def getErrorImgIndex(output, target, topk=(1,)):
     indexs = []
     for k in topk:
         mask = (correct[:k].sum(0) == 1)
-        errorImgIndex = range(batch_size)[mask]
+        errorImgIndex = torch.arange(batch_size)[mask]
         print(errorImgIndex.shape)
         indexs.append(errorImgIndex)
     return masks
