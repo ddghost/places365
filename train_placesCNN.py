@@ -294,7 +294,7 @@ def accuracy(output, target, topk=(1,)):
     return res
 
 
-def getErrorImgIndex(output, target, topk=(1,)):
+def getErrorImgInfo(output, target, topk=(1,)):
     """Computes the precision@k for the specified values of k"""
     maxk = max(topk)
     batch_size = target.size(0)
@@ -303,13 +303,12 @@ def getErrorImgIndex(output, target, topk=(1,)):
     pred = pred.t()
     correct = pred.eq(target.view(1, -1).expand_as(pred))
     pred = pred.t()
-    indexs = []
+    infos = []
     for k in topk:
         mask = (correct[:k].sum(0) == 1)
         errorImgIndex = torch.arange(batch_size)[mask]
-        print(errorImgIndex.shape)
-        indexs.append(errorImgIndex)
-    return masks
+        infos.append((errorImgIndex,pred[mask],target[mask]))
+    return infos
 
 
 
@@ -348,8 +347,15 @@ def checkErrorImage(val_loader, model, criterion):
 
             # measure accuracy and record loss
             prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
-            errorIndex1, errorIndex5 = getErrorImgIndex(output.data, target, topk=(1, 5))
-            
+            errorInfos1, errorInfos5 = getErrorImgIndex(output.data, target, topk=(1, 5))
+            for i in len(errorInfos5):
+                imgIndex = errorInfos5[0][0] + i * 256
+                top5Result = errorInfos5[0][1]
+                realResult = errorInfos5[0][2]
+                print(imgIndex, top5Result, realResult)
+                return 
+                errorImgFile.write(imgIndex, top5Result, realResult)
+
             #print(errorMask1.shape,errorMask1)
             losses.update(loss.item(), input.size(0))
 
@@ -359,7 +365,7 @@ def checkErrorImage(val_loader, model, criterion):
             # measure elapsed time
             batch_time.update(time.time() - end)
             end = time.time()
-
+    errorImgFile.close()
 
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
           .format(top1=top1, top5=top5))
