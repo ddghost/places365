@@ -323,19 +323,6 @@ def checkErrorImage(val_loader, model, criterion):
  
     end = time.time()
 
-    global args
-    valdir = os.path.join(args.data, 'val')
-    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
-    tmp = datasets.ImageFolder(valdir, transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            normalize,
-        ]))
-    print(tmp[0].__getitem__())
-
-
     errorImgFile = open('errorImgFile.txt','w')
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
@@ -353,9 +340,9 @@ def checkErrorImage(val_loader, model, criterion):
                 imgIndex = errorInfos5[0][j] + i * 256
                 top5Result = errorInfos5[1][j]
                 realResult = errorInfos5[2][j]
-                print(imgIndex, top5Result, realResult)
+                print'i:'imgIndex,' top5 result:', top5Result,' real Result' realResult)
                 return 
-                errorImgFile.write(imgIndex, top5Result, realResult)
+                errorImgFile.write('i:'imgIndex,' top5 result:', top5Result,' real Result' realResult)
 
             #print(errorMask1.shape,errorMask1)
             losses.update(loss.item(), input.size(0))
