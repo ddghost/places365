@@ -310,11 +310,11 @@ def getErrorImgInfo(output, target, topk=(1,)):
         infos.append((errorImgIndex,pred[mask],target[mask]))
     return infos
 
-def getClassNameByTensor(checkTensor. dataSet):
+def getClassNameByTensor(checkTensor, dataSet):
     msg = ''
     for i in range(checkTensor.size(0) ):
-        pass
-	print
+        msg += dataSet.classes[i]
+    print msg
     return msg
 
 def checkErrorImage(val_loader, model, criterion):
@@ -347,8 +347,8 @@ def checkErrorImage(val_loader, model, criterion):
             print(errorInfos5[0].size(0))
             for j in range(errorInfos5[0].size(0)):
                 imgIndex = errorInfos5[0][j] + i * 256
-                top5Result = errorInfos5[1][j]
-                realResult = errorInfos5[2][j]
+                top5Result = getClassNameByTensor(errorInfos5[1][j])
+                realResult = getClassNameByTensor(errorInfos5[2][j])
                 errorImgName = valDataSet.samples[imgIndex][0]
                 print(errorImgName,'top5 result:', top5Result,'real Result', realResult)
                 return 
