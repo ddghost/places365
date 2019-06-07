@@ -333,7 +333,7 @@ def checkErrorImage(val_loader, model, criterion):
             transforms.ToTensor(),
             normalize,
         ]))
-    print(dir(tmp[0]))
+    print(tmp[0].__getitem__())
 
 
     errorImgFile = open('errorImgFile.txt','w')
