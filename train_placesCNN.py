@@ -328,8 +328,7 @@ def checkErrorImage(val_loader, model, criterion):
     end = time.time()
     global args
     valdir = os.path.join(args.data, 'val')
-    valDataSet = datasets.ImageFolder(valdir))
-
+    valDataSet = datasets.ImageFolder(valdir)
 
     errorImgFile = open('errorImgFile.txt','w')
     with torch.no_grad():
