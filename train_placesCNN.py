@@ -352,7 +352,7 @@ def checkErrorImage(val_loader, model, criterion):
                 errorImgName = valDataSet.samples[imgIndex][0][dataSetRootLen:]
                 print(errorImgName,'top5 result:', top5Result,'real Result', realResult)
                 return 
-                errorImgFile.write(errorImgName,'top5 result:', top5Result,'real Result', realResult)
+                errorImgFile.write(errorImgName,'top5: ', top5Result,'real: ', realResult)
 
             #print(errorMask1.shape,errorMask1)
             losses.update(loss.item(), input.size(0))
