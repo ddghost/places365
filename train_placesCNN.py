@@ -317,7 +317,7 @@ def getErrorImgInfo(output, target, topk=(1,)):
 def getClassNameByTensor(checkTensor, dataSet):
     msg = ''
     for i in range(checkTensor.shape[0] ):
-        msg += dataSet.classes[i]  + ' '
+        msg += dataSet.classes[checkTensor[i] ]  + ' '
     return msg
 
 def checkErrorImage(val_loader, model, criterion):
