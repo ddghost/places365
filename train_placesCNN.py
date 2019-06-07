@@ -312,9 +312,8 @@ def getErrorImgInfo(output, target, topk=(1,)):
 
 def getClassNameByTensor(checkTensor, dataSet):
     msg = ''
-    print(checkTensor)
     for i in range(checkTensor.shape[0] ):
-        msg += dataSet.classes[i]
+        msg += dataSet.classes[i]  + ' '
     return msg
 
 def checkErrorImage(val_loader, model, criterion):
@@ -329,6 +328,7 @@ def checkErrorImage(val_loader, model, criterion):
     end = time.time()
     global args
     valdir = os.path.join(args.data, 'val')
+    dataSetRootLen = len(valdir)
     valDataSet = datasets.ImageFolder(valdir)
 
     errorImgFile = open('errorImgFile.txt','w')
@@ -348,7 +348,8 @@ def checkErrorImage(val_loader, model, criterion):
                 imgIndex = errorInfos5[0][j] + i * 256
                 top5Result = getClassNameByTensor(errorInfos5[1][j], valDataSet)
                 realResult = getClassNameByTensor(errorInfos5[2][j].view(-1), valDataSet)
-                errorImgName = valDataSet.samples[imgIndex][0]
+                
+                errorImgName = valDataSet.samples[imgIndex][0][dataSetRootLen:]
                 print(errorImgName,'top5 result:', top5Result,'real Result', realResult)
                 return 
                 errorImgFile.write(errorImgName,'top5 result:', top5Result,'real Result', realResult)
