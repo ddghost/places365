@@ -101,6 +101,7 @@ def main():
             del checkpoint
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
+            return
     else:
         print(model)
     
