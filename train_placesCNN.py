@@ -302,10 +302,12 @@ def getErrorImgMask(output, target, topk=(1,)):
     _, pred = output.topk(maxk, 1, True, True)
     pred = pred.t()
     correct = pred.eq(target.view(1, -1).expand_as(pred))
-    mask = []
+    masks = []
     for k in topk:
-        mask.append(correct[:k].sum(0) == 1)
-    return mask
+        mask = (correct[:k].sum(0) == 1)
+        print(mask.shape,pred.shape)
+        masks.append(mask)
+    return masks
 
 
 
