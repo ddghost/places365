@@ -86,7 +86,7 @@ def main():
     else:
         model = torch.nn.DataParallel(model, device_ids).cuda()
     
-    print(model)
+    
 
     # optionally resume from a checkpoint
     if args.resume:
@@ -98,9 +98,12 @@ def main():
             model.load_state_dict(checkpoint['state_dict'])
             print("=> loaded checkpoint '{}' (epoch {})"
                   .format(args.resume, checkpoint['epoch']))
+            del checkpoint
         else:
             print("=> no checkpoint found at '{}'".format(args.resume))
-    del checkpoint
+    else:
+        print(model)
+    
     cudnn.benchmark = True
 
     # Data loading code
@@ -349,7 +352,7 @@ def checkErrorImage(val_loader, model, criterion):
                 realResult = getClassNameByTensor(errorInfos5[2][j].view(-1), valDataSet)
                 
                 errorImgName = valDataSet.samples[imgIndex][0][dataSetRootLen:]
-                errorImgFile.write(errorImgName + 'top5: ' + top5Result + 'real: ' + realResult + '\n')
+                errorImgFile.write(errorImgName + ' top5: ' + top5Result + 'real: ' + realResult + '\n')
 
             #print(errorMask1.shape,errorMask1)
             losses.update(loss.item(), input.size(0))
