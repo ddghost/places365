@@ -347,7 +347,7 @@ def checkErrorImage(val_loader, model, criterion):
             for j in range(errorInfos5[0].size(0)):
                 imgIndex = errorInfos5[0][j] + i * 256
                 top5Result = getClassNameByTensor(errorInfos5[1][j], valDataSet)
-                realResult = getClassNameByTensor(errorInfos5[2][j], valDataSet)
+                realResult = getClassNameByTensor(errorInfos5[2][j].view(-1), valDataSet)
                 errorImgName = valDataSet.samples[imgIndex][0]
                 print(errorImgName,'top5 result:', top5Result,'real Result', realResult)
                 return 
