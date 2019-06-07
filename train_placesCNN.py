@@ -342,7 +342,7 @@ def checkErrorImage(val_loader, model, criterion):
                 realResult = errorInfos5[2][j]
                 print('i:', imgIndex,' top5 result:', top5Result,' real Result', realResult)
                 return 
-                errorImgFile.write('i:', imgIndex,' top5 result:', top5Result,' real Result' realResult)
+                errorImgFile.write('i:', imgIndex,' top5 result:', top5Result,' real Result', realResult)
 
             #print(errorMask1.shape,errorMask1)
             losses.update(loss.item(), input.size(0))
