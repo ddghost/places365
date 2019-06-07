@@ -305,7 +305,7 @@ def getErrorImgInfo(output, target, topk=(1,)):
     pred = pred.t()
     infos = []
     for k in topk:
-        mask = (correct[:k].sum(0) == 1)
+        mask = (correct[:k].sum(0) == 0)
         errorImgIndex = torch.arange(batch_size)[mask]
         infos.append((errorImgIndex,pred[mask],target[mask]))
     return infos
@@ -333,7 +333,7 @@ def checkErrorImage(val_loader, model, criterion):
             transforms.ToTensor(),
             normalize,
         ]))
-    print(tmp[0][0].shape,tmp[0][1])
+    print(tmp.imgs)
 
 
     errorImgFile = open('errorImgFile.txt','w')
