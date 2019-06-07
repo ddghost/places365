@@ -348,7 +348,8 @@ def checkErrorImage(val_loader, model, criterion):
             # measure accuracy and record loss
             prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
             errorInfos1, errorInfos5 = getErrorImgInfo(output.data, target, topk=(1, 5))
-            for i in len(errorInfos5):
+            print(errorInfos5[0].size(0))
+            for i in errorInfos5[0].size(0):
                 imgIndex = errorInfos5[0][0] + i * 256
                 top5Result = errorInfos5[0][1]
                 realResult = errorInfos5[0][2]
