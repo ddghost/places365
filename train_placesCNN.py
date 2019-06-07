@@ -312,7 +312,7 @@ def getErrorImgInfo(output, target, topk=(1,)):
 
 def getClassNameByTensor(checkTensor, dataSet):
     msg = ''
-    for i in range(checkTensor.size(0) ):
+    for i in range(checkTensor.shape[0] ):
         msg += dataSet.classes[i]
     return msg
 
