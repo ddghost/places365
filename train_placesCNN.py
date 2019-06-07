@@ -349,7 +349,7 @@ def checkErrorImage(val_loader, model, criterion):
                 realResult = getClassNameByTensor(errorInfos5[2][j].view(-1), valDataSet)
                 
                 errorImgName = valDataSet.samples[imgIndex][0][dataSetRootLen:]
-                errorImgFile.write(errorImgName + 'top5: ' + top5Result + 'real: ' + realResult)
+                errorImgFile.write(errorImgName + 'top5: ' + top5Result + 'real: ' + realResult + '\n')
 
             #print(errorMask1.shape,errorMask1)
             losses.update(loss.item(), input.size(0))
