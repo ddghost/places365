@@ -349,12 +349,15 @@ def checkErrorImage(val_loader, model, criterion):
     errorImgFile1 = open(errorMsgDir+'errorImgFile1.txt','w')
     errorImgFile5 = open(errorMsgDir+'errorImgFile5.txt','w') 
     statisticFile = open(errorMsgDir+'statistics.csv', 'w', newline='')
+    statisticFile1 = open(errorMsgDir+'statistics1.csv', 'w', newline='')
     # 设定写入模式
     statistic_write = csv.writer(statisticFile, dialect='excel')
+    statistic_write = csv.writer(statisticFile1, dialect='excel')
     # 写入具体内容
     csv_header=['className', 'top1ErrorNum', 'top1top3ErrorClassName', 'top1top3value',
                 'top5ErrorNum', 'top5top3ErrorClassName', 'top5top3value']
     statistic_write.writerow(csv_header)
+    statistic_write1.writerow(csv_header)
     bar = progressbar.progressbar(len(val_loader))
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
@@ -419,6 +422,19 @@ def checkErrorImage(val_loader, model, criterion):
         row = [nowClassName, top1ErrorNum, top1top3ErrorClassName, str(top1top3value),
                 top5ErrorNum, top5top3ErrorClassName, str(top5top3value)]
         statistic_write.writerow(row)
+    for i in range(classNum):
+        nowClassName = valDataSet.classes[i]
+        top1top3value, pred = confuseMat1[:,i].topk(3)
+        top1ErrorNum = confuseMat1[:,i].sum().item()
+        top1top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
+
+        top5top3value, pred = confuseMat5[:,i].topk(3)
+        top5ErrorNum = confuseMat5[:,i].sum().item() / 5
+        top5top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
+        row = [nowClassName, top1ErrorNum, top1top3ErrorClassName, str(top1top3value),
+                top5ErrorNum, top5top3ErrorClassName, str(top5top3value)]
+        statistic_write1.writerow(row)
+
     errorImgFile5.close()
     errorImgFile1.close()
     statisticFile.close()
