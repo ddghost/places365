@@ -380,8 +380,9 @@ def checkErrorImage(val_loader, model, criterion):
             batch_time.update(time.time() - end)
             end = time.time()
             bar.output(i+1)
-
-    confuseMat5Image = confuseMat5.cpu().clone()
+    loader = transforms.Compose([transforms.ToTensor()])
+    unloader = transforms.ToPILImage()
+    confuseMat5Image = unloader(confuseMat5.cpu().clone())
     confuseMat5Image.save('confuseMat5Image.jpg')
     errorImgFile.close()
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
