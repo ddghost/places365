@@ -352,7 +352,7 @@ def checkErrorImage(val_loader, model, criterion):
     statisticFile1 = open(errorMsgDir+'statistics1.csv', 'w', newline='')
     # 设定写入模式
     statistic_write = csv.writer(statisticFile, dialect='excel')
-    statistic_write = csv.writer(statisticFile1, dialect='excel')
+    statistic_write1 = csv.writer(statisticFile1, dialect='excel')
     # 写入具体内容
     csv_header=['className', 'top1ErrorNum', 'top1top3ErrorClassName', 'top1top3value',
                 'top5ErrorNum', 'top5top3ErrorClassName', 'top5top3value']
