@@ -327,8 +327,6 @@ def saveTensorAsImg(path, tensor):
     tensorImage.save(path)
 
 def checkErrorImage(val_loader, model, criterion):
-    batch_time = AverageMeter()
-    losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
 
@@ -346,7 +344,7 @@ def checkErrorImage(val_loader, model, criterion):
     confuseMat5 = torch.zeros(classNum, classNum)
     errorImgFile1 = open('errorImgFile1.txt','w')
     errorImgFile5 = open('errorImgFile5.txt','w')
-
+    statisticFile = open('statis.txt','w')
     bar = progressbar.progressbar(len(val_loader))
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
@@ -366,8 +364,7 @@ def checkErrorImage(val_loader, model, criterion):
             for j in range(errorInfos5[0].size(0)):
                 top5Predict = errorInfos5[1][j]
                 labelIndex = errorInfos5[2][j].view(-1)
-
-                confuseMat5[labelIndex.item(),top5Predict] += 1 
+                confuseMat5[labelIndex.item(),top5Predict] += 1 / 5
                
                 imgIndex = errorInfos5[0][j] + i * 256
                 top5Result = getClassNameByTensor(top5Predict, valDataSet)
@@ -375,10 +372,10 @@ def checkErrorImage(val_loader, model, criterion):
                 
                 errorImgName = valDataSet.samples[imgIndex][0][dataSetRootLen:]
                 errorImgFile5.write(errorImgName + ' top5: ' + top5Result + 'real: ' + realResult + '\n')
+            
             for j in range(errorInfos1[0].size(0)):
                 top1Predict = errorInfos1[1][j]
                 labelIndex = errorInfos1[2][j].view(-1)
-                print(top1Predict.shape)
                 confuseMat1[labelIndex.item(),top1Predict] += 1 
                 
                 imgIndex = errorInfos1[0][j] + i * 256
@@ -386,16 +383,14 @@ def checkErrorImage(val_loader, model, criterion):
                 realResult = getClassNameByTensor(labelIndex, valDataSet)
                 
                 errorImgName = valDataSet.samples[imgIndex][0][dataSetRootLen:]
-                errorImgFile1.write(errorImgName + ' top5: ' + top1Result + 'real: ' + realResult + '\n')
+                errorImgFile1.write(errorImgName + ' top1: ' + top1Result + 'real: ' + realResult + '\n')
 
             #print(errorMask1.shape,errorMask1)
-            losses.update(loss.item(), input.size(0))
 
             top1.update(prec1.item(), input.size(0))
             top5.update(prec5.item(), input.size(0))
 
             # measure elapsed time
-            batch_time.update(time.time() - end)
             end = time.time()
             bar.output(i+1)
     print()
@@ -404,16 +399,20 @@ def checkErrorImage(val_loader, model, criterion):
 
     for i in range(classNum):
         nowClassName = valDataSet.classes[i]
+        top1top3value, pred = confuseMat1[i].topk(3)
+        top1ErrorNum = confuseMat1[i].sum()
+        top1top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
 
-        value, pred = confuseMat5[i].topk(3)
-        top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
-        errorImgFile5.write('class ' + nowClassName + ' top 3 confuse ' + top3ErrorClassName + str(value)+'\n')
+        top5top3value, pred = confuseMat5[i].topk(3)
+        top5ErrorNum = confuseMat5[i].sum()
+        top5top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
 
-        value, pred = confuseMat1[i].topk(3)
-        top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
-        errorImgFile1.write('class ' + nowClassName + ' top 3 confuse ' + top3ErrorClassName + str(value)+'\n')
+        statisticFile.write('class ' + nowClassName + ' top1 errorNum:' + top1ErrorNum, 'top5 errorNum:' + top5ErrorNum)
+        statisticFile.write('top1 top 3 confuse ' + top1top3ErrorClassName + str(top1top3value)+'\n')
+        statisticFile.write('top5 top 3 confuse ' + top5top3ErrorClassName + str(top5top3value)+'\n')
     errorImgFile5.close()
     errorImgFile1.close()
+    statisticFile.close()
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
           .format(top1=top1, top5=top5))
 
