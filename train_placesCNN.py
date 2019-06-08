@@ -325,7 +325,9 @@ def checkErrorImage(val_loader, model, criterion):
     losses = AverageMeter()
     top1 = AverageMeter()
     top5 = AverageMeter()
+
     
+
     # switch to evaluate mode
     model.eval()
  
@@ -334,6 +336,10 @@ def checkErrorImage(val_loader, model, criterion):
     valdir = os.path.join(args.data, 'val')
     dataSetRootLen = len(valdir)
     valDataSet = datasets.ImageFolder(valdir)
+
+    classNum = len(valDataSet.classes)
+    #confueMat1 = torch.zeros(classNum, classNum)
+    confueMat5 = torch.zeros(classNum, classNum)
 
     errorImgFile = open('errorImgFile.txt','w')
     with torch.no_grad():
@@ -347,11 +353,15 @@ def checkErrorImage(val_loader, model, criterion):
             # measure accuracy and record loss
             prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
             errorInfos1, errorInfos5 = getErrorImgInfo(output.data, target, topk=(1, 5))
+            #top5Predict是top5预测结果，labelIndex是标签下标
+            top5Predict = errorInfos5[1][j]
+            labelIndex = errorInfos1[2][j].view(-1)
+            #top5处理
             for j in range(errorInfos5[0].size(0)):
                 imgIndex = errorInfos5[0][j] + i * 256
-                top5Result = getClassNameByTensor(errorInfos5[1][j], valDataSet)
-                realResult = getClassNameByTensor(errorInfos5[2][j].view(-1), valDataSet)
-                
+                top5Result = getClassNameByTensor(top5Predict, valDataSet)
+                realResult = getClassNameByTensor(labelIndex, valDataSet)
+                confueMat5[labelIndex.item() ] += (torch.ones((1,365)) / 5 )[top5Predict]
                 errorImgName = valDataSet.samples[imgIndex][0][dataSetRootLen:]
                 errorImgFile.write(errorImgName + ' top5: ' + top5Result + 'real: ' + realResult + '\n')
 
@@ -365,7 +375,7 @@ def checkErrorImage(val_loader, model, criterion):
             batch_time.update(time.time() - end)
             end = time.time()
     errorImgFile.close()
-
+    print(confueMat5)
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
           .format(top1=top1, top5=top5))
 
