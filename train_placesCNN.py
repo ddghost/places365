@@ -22,6 +22,7 @@ import wideresnet
 import pdb
 import SENet
 import progressbar
+from PIL import Image
 
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
@@ -326,8 +327,6 @@ def checkErrorImage(val_loader, model, criterion):
     top1 = AverageMeter()
     top5 = AverageMeter()
 
-    
-
     # switch to evaluate mode
     model.eval()
  
@@ -381,9 +380,9 @@ def checkErrorImage(val_loader, model, criterion):
             batch_time.update(time.time() - end)
             end = time.time()
             bar.output(i+1)
-    print()
-    
-    errorImgFile.write(str(confuseMat5))
+
+    confuseMat5Image = confuseMat5.cpu().clone()
+    confuseMat5Image.save('confuseMat5Image.jpg')
     errorImgFile.close()
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
           .format(top1=top1, top5=top5))

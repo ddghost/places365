@@ -25,7 +25,7 @@ class progressbar(object):
 		rate *= self.fullRate
 		barLen = int(rate ) // 2
 		barStr = '#' * barLen 
-		self.clear()
+		#self.clear()
 		outputStr = '\r%s%s%.2f%% [%.2fs/%.2fs]%s' % \
 					(self.frontStr, barStr, rate, self.progressTime, predictRestTime, self.backStr)
 		self.lastOutputLen = len(outputStr)
