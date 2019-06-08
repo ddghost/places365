@@ -321,6 +321,11 @@ def getClassNameByTensor(checkTensor, dataSet):
         msg += dataSet.classes[checkTensor[i] ]  + ' '
     return msg
 
+def saveTensorAsImg(path, tensor):
+    unloader = transforms.ToPILImage()
+    tensorImage = unloader(tensor.cpu().clone())
+    tensorImage.save(path)
+
 def checkErrorImage(val_loader, model, criterion):
     batch_time = AverageMeter()
     losses = AverageMeter()
@@ -357,7 +362,7 @@ def checkErrorImage(val_loader, model, criterion):
             #top5Predict是top5预测结果，labelIndex是标签下标
             
             #top5处理
-			
+
             for j in range(errorInfos5[0].size(0)):
                 top5Predict = errorInfos5[1][j]
                 labelIndex = errorInfos5[2][j].view(-1)
@@ -370,12 +375,12 @@ def checkErrorImage(val_loader, model, criterion):
                 
                 errorImgName = valDataSet.samples[imgIndex][0][dataSetRootLen:]
                 errorImgFile5.write(errorImgName + ' top5: ' + top5Result + 'real: ' + realResult + '\n')
-
+            print(errorInfos1[0].size(0))
             for j in range(errorInfos1[0].size(0)):
                 top1Predict = errorInfos1[1][j]
                 labelIndex = errorInfos1[2][j].view(-1)
                 confuseMat1[labelIndex.item(),top1Predict] += 1 
-               
+                
                 imgIndex = errorInfos1[0][j] + i * 256
                 top1Result = getClassNameByTensor(top1Predict, valDataSet)
                 realResult = getClassNameByTensor(labelIndex, valDataSet)
@@ -394,20 +399,17 @@ def checkErrorImage(val_loader, model, criterion):
             end = time.time()
             bar.output(i+1)
     print()
-    loader = transforms.Compose([transforms.ToTensor()])
-    unloader = transforms.ToPILImage()
-    confuseMat5Image = unloader(confuseMat5.cpu().clone())
-    confuseMat5Image.save('confuseMat5Image.jpg')
-    confuseMat1Image = unloader(confuseMat1.cpu().clone())
-    confuseMat1Image.save('confuseMat1Image.jpg')
+    saveTensorAsImg('confuseMat5Image.jpg', confuseMat5)
+    saveTensorAsImg('confuseMat1Image.jpg', confuseMat1)
+
     for i in range(classNum):
         nowClassName = valDataSet.classes[i]
 
-        value, pred = confuseMat5[i].topk(5)
+        value, pred = confuseMat5[i].topk(3)
         top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
         errorImgFile5.write('class ' + nowClassName + ' top 3 confuse ' + top3ErrorClassName + str(value)+'\n')
 
-        value, pred = confuseMat1[i].topk(5)
+        value, pred = confuseMat1[i].topk(3)
         top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
         errorImgFile1.write('class ' + nowClassName + ' top 3 confuse ' + top3ErrorClassName + str(value)+'\n')
     errorImgFile5.close()
