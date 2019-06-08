@@ -382,8 +382,9 @@ def checkErrorImage(val_loader, model, criterion):
             end = time.time()
             bar.output(i+1)
     print()
+    
+    errorImgFile.write(str(confuseMat5))
     errorImgFile.close()
-    errorImgFile.write(confuseMat5)
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
           .format(top1=top1, top5=top5))
 
