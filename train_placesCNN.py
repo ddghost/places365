@@ -312,7 +312,7 @@ def getErrorImgInfo(output, target, topk=(1,)):
     for k in topk:
         mask = (correct[:k].sum(0) == 0)
         errorImgIndex = torch.arange(batch_size)[mask]
-        infos.append((errorImgIndex,pred[mask],target[mask]))
+        infos.append((errorImgIndex,pred[mask,:k],target[mask]))
     return infos
 
 def getClassNameByTensor(checkTensor, dataSet):
@@ -375,10 +375,10 @@ def checkErrorImage(val_loader, model, criterion):
                 
                 errorImgName = valDataSet.samples[imgIndex][0][dataSetRootLen:]
                 errorImgFile5.write(errorImgName + ' top5: ' + top5Result + 'real: ' + realResult + '\n')
-            print(errorInfos1[0].size(0))
             for j in range(errorInfos1[0].size(0)):
                 top1Predict = errorInfos1[1][j]
                 labelIndex = errorInfos1[2][j].view(-1)
+                print(top1Predict.shape)
                 confuseMat1[labelIndex.item(),top1Predict] += 1 
                 
                 imgIndex = errorInfos1[0][j] + i * 256
