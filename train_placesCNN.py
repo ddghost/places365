@@ -348,7 +348,7 @@ def checkErrorImage(val_loader, model, criterion):
     errorMsgDir = '../errorMsg/'
     errorImgFile1 = open(errorMsgDir+'errorImgFile1.txt','w')
     errorImgFile5 = open(errorMsgDir+'errorImgFile5.txt','w') 
-    statisticFile = open(errorMsgDir+'write_file.csv', 'w', newline='')
+    statisticFile = open(errorMsgDir+'statistics.csv', 'w', newline='')
     # 设定写入模式
     statistic_write = csv.writer(statisticFile, dialect='excel')
     # 写入具体内容
