@@ -379,7 +379,7 @@ def checkErrorImage(val_loader, model, criterion):
             batch_time.update(time.time() - end)
             end = time.time()
     errorImgFile.close()
-    print(confueMat5)
+    errorImgFile.write(confuseMat5)
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
           .format(top1=top1, top5=top5))
 
