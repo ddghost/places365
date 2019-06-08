@@ -366,7 +366,7 @@ def checkErrorImage(val_loader, model, criterion):
             for j in range(errorInfos5[0].size(0)):
                 top5Predict = errorInfos5[1][j]
                 labelIndex = errorInfos5[2][j].view(-1)
-                confuseMat5[labelIndex.item(),top5Predict] += 1 / 5
+                confuseMat5[labelIndex.item(),top5Predict] += 1 
                
                 imgIndex = errorInfos5[0][j] + i * 256
                 top5Result = getClassNameByTensor(top5Predict, valDataSet)
@@ -406,7 +406,7 @@ def checkErrorImage(val_loader, model, criterion):
         top1top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
 
         top5top3value, pred = confuseMat5[i].topk(3)
-        top5ErrorNum = confuseMat5[i].sum().item()
+        top5ErrorNum = confuseMat5[i].sum().item() / 5
         top5top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
 
         statisticFile.write('class ' + nowClassName + ' top1 errorNum:' + str(top1ErrorNum) + ' top5 errorNum:' + str(top5ErrorNum)+'\n' )
