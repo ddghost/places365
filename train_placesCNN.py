@@ -23,7 +23,8 @@ import pdb
 import SENet
 import progressbar
 from PIL import Image
-
+import pandas as pdb
+import csv
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
     and callable(models.__dict__[name]))
@@ -342,11 +343,18 @@ def checkErrorImage(val_loader, model, criterion):
     classNum = len(valDataSet.classes)
     confuseMat1 = torch.zeros(classNum, classNum)
     confuseMat5 = torch.zeros(classNum, classNum)
-	
+   
+
     errorMsgDir = '../errorMsg/'
     errorImgFile1 = open(errorMsgDir+'errorImgFile1.txt','w')
-    errorImgFile5 = open(errorMsgDir+'errorImgFile5.txt','w')
-    statisticFile = open(errorMsgDir+'statis.txt','w')
+    errorImgFile5 = open(errorMsgDir+'errorImgFile5.txt','w') 
+	statisticFile = open('../results/write_file.csv', 'w', newline='')
+    # 设定写入模式
+    statistic_write = csv.writer(statisticFile, dialect='excel')
+    # 写入具体内容
+    csv_header=['className', 'top1ErrorNum', 'top1top3ErrorClassName', 'top1top3value'
+                'top5ErrorNum', 'top5top3ErrorClassName', 'top5top3value']
+    statistic_write.writerow(csv_header)
     bar = progressbar.progressbar(len(val_loader))
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
@@ -408,10 +416,9 @@ def checkErrorImage(val_loader, model, criterion):
         top5top3value, pred = confuseMat5[i].topk(3)
         top5ErrorNum = confuseMat5[i].sum().item() / 5
         top5top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
-
-        statisticFile.write('class ' + nowClassName + ' top1 errorNum:' + str(top1ErrorNum) + ' top5 errorNum:' + str(top5ErrorNum)+'\n' )
-        statisticFile.write('top1top 3 confuse ' + top1top3ErrorClassName + str(top1top3value)+'\n')
-        statisticFile.write('top5top 3 confuse ' + top5top3ErrorClassName + str(top5top3value)+'\n')
+        row = [nowClassName, top1ErrorNum, top1top3ErrorClassName, str(top1top3value)
+                top5ErrorNum, top5top3ErrorClassName, str(top5top3value)]
+        statistic_write.writerow(row)
     errorImgFile5.close()
     errorImgFile1.close()
     statisticFile.close()
