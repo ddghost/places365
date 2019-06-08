@@ -337,10 +337,10 @@ def checkErrorImage(val_loader, model, criterion):
     valDataSet = datasets.ImageFolder(valdir)
 
     classNum = len(valDataSet.classes)
-    #confueMat1 = torch.zeros(classNum, classNum)
+    confuseMat1 = torch.zeros(classNum, classNum)
     confuseMat5 = torch.zeros(classNum, classNum)
-
-    errorImgFile = open('errorImgFile.txt','w')
+    errorImgFile1 = open('errorImgFile1.txt','w')
+    errorImgFile5 = open('errorImgFile5.txt','w')
 
     bar = progressbar.progressbar(len(val_loader))
     with torch.no_grad():
@@ -357,18 +357,31 @@ def checkErrorImage(val_loader, model, criterion):
             #top5Predict是top5预测结果，labelIndex是标签下标
             
             #top5处理
+			
             for j in range(errorInfos5[0].size(0)):
                 top5Predict = errorInfos5[1][j]
-                labelIndex = errorInfos1[2][j].view(-1)
+                labelIndex = errorInfos5[2][j].view(-1)
 
-                confuseMat5[labelIndex.item(),top5Predict] += 1 / 5 
-                
+                confuseMat5[labelIndex.item(),top5Predict] += 1 
+               
                 imgIndex = errorInfos5[0][j] + i * 256
                 top5Result = getClassNameByTensor(top5Predict, valDataSet)
                 realResult = getClassNameByTensor(labelIndex, valDataSet)
                 
                 errorImgName = valDataSet.samples[imgIndex][0][dataSetRootLen:]
-                errorImgFile.write(errorImgName + ' top5: ' + top5Result + 'real: ' + realResult + '\n')
+                errorImgFile5.write(errorImgName + ' top5: ' + top5Result + 'real: ' + realResult + '\n')
+
+            for j in range(errorInfos1[0].size(0)):
+                top1Predict = errorInfos1[1][j]
+                labelIndex = errorInfos1[2][j].view(-1)
+                confuseMat1[labelIndex.item(),top1Predict] += 1 
+               
+                imgIndex = errorInfos1[0][j] + i * 256
+                top1Result = getClassNameByTensor(top1Predict, valDataSet)
+                realResult = getClassNameByTensor(labelIndex, valDataSet)
+                
+                errorImgName = valDataSet.samples[imgIndex][0][dataSetRootLen:]
+                errorImgFile1.write(errorImgName + ' top5: ' + top1Result + 'real: ' + realResult + '\n')
 
             #print(errorMask1.shape,errorMask1)
             losses.update(loss.item(), input.size(0))
@@ -380,17 +393,25 @@ def checkErrorImage(val_loader, model, criterion):
             batch_time.update(time.time() - end)
             end = time.time()
             bar.output(i+1)
-
+    print()
     loader = transforms.Compose([transforms.ToTensor()])
     unloader = transforms.ToPILImage()
     confuseMat5Image = unloader(confuseMat5.cpu().clone())
     confuseMat5Image.save('confuseMat5Image.jpg')
+    confuseMat1Image = unloader(confuseMat1.cpu().clone())
+    confuseMat1Image.save('confuseMat1Image.jpg')
     for i in range(classNum):
-        value, pred = confuseMat5[i].topk(5)
         nowClassName = valDataSet.classes[i]
-        top5ErrorClassName = getClassNameByTensor(pred, valDataSet)
-        errorImgFile.write('class ' + nowClassName + ' top 5 confuse ' + top5ErrorClassName + str(value))
-    errorImgFile.close()
+
+        value, pred = confuseMat5[i].topk(5)
+        top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
+        errorImgFile5.write('class ' + nowClassName + ' top 3 confuse ' + top3ErrorClassName + str(value)+'\n')
+
+        value, pred = confuseMat1[i].topk(5)
+        top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
+        errorImgFile1.write('class ' + nowClassName + ' top 3 confuse ' + top3ErrorClassName + str(value)+'\n')
+    errorImgFile5.close()
+    errorImgFile1.close()
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
           .format(top1=top1, top5=top5))
 
