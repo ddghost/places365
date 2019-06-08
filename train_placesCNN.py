@@ -388,7 +388,7 @@ def checkErrorImage(val_loader, model, criterion):
     for i in range(classNum):
         value, pred = confuseMat5[i].topk(5)
         nowClassName = valDataSet.classes[i]
-        top5ErrorClassName = getClassNameByTensor(pred)
+        top5ErrorClassName = getClassNameByTensor(pred, valDataSet)
         errorImgFile.write('class ' + nowClassName + ' top 5 confuse ' + top5ErrorClassName + str(value))
     errorImgFile.close()
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
