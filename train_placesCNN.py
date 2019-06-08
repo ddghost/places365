@@ -342,9 +342,11 @@ def checkErrorImage(val_loader, model, criterion):
     classNum = len(valDataSet.classes)
     confuseMat1 = torch.zeros(classNum, classNum)
     confuseMat5 = torch.zeros(classNum, classNum)
-    errorImgFile1 = open('errorImgFile1.txt','w')
-    errorImgFile5 = open('errorImgFile5.txt','w')
-    statisticFile = open('statis.txt','w')
+	
+    errorMsgDir = '../errorMsg/'
+    errorImgFile1 = open(errorMsgDir+'errorImgFile1.txt','w')
+    errorImgFile5 = open(errorMsgDir+'errorImgFile5.txt','w')
+    statisticFile = open(errorMsgDir+'statis.txt','w')
     bar = progressbar.progressbar(len(val_loader))
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
@@ -394,17 +396,17 @@ def checkErrorImage(val_loader, model, criterion):
             end = time.time()
             bar.output(i+1)
     print()
-    saveTensorAsImg('confuseMat5Image.jpg', confuseMat5)
-    saveTensorAsImg('confuseMat1Image.jpg', confuseMat1)
+    saveTensorAsImg(errorMsgDir+'confuseMat5Image.jpg', confuseMat5)
+    saveTensorAsImg(errorMsgDir+'confuseMat1Image.jpg', confuseMat1)
 
     for i in range(classNum):
         nowClassName = valDataSet.classes[i]
         top1top3value, pred = confuseMat1[i].topk(3)
-        top1ErrorNum = confuseMat1[i].sum()
+        top1ErrorNum = confuseMat1[i].sum().item()
         top1top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
 
         top5top3value, pred = confuseMat5[i].topk(3)
-        top5ErrorNum = confuseMat5[i].sum()
+        top5ErrorNum = confuseMat5[i].sum().item()
         top5top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
 
         statisticFile.write('class ' + nowClassName + ' top1 errorNum:' + top1ErrorNum + 'top5 errorNum:' + top5ErrorNum)
