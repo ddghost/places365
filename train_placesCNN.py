@@ -339,7 +339,7 @@ def checkErrorImage(val_loader, model, criterion):
 
     classNum = len(valDataSet.classes)
     #confueMat1 = torch.zeros(classNum, classNum)
-    confueMat5 = torch.zeros(classNum, classNum)
+    confuseMat5 = torch.zeros(classNum, classNum)
 
     errorImgFile = open('errorImgFile.txt','w')
     with torch.no_grad():
@@ -359,7 +359,9 @@ def checkErrorImage(val_loader, model, criterion):
             for j in range(errorInfos5[0].size(0)):
                 top5Predict = errorInfos5[1][j]
                 labelIndex = errorInfos1[2][j].view(-1)
-                confueMat5[labelIndex.item() ] += (torch.ones((classNum)) / 5 )[top5Predict]
+                print((torch.ones((classNum)) / 5 )[top5Predict])
+                print( confuseMat5[labelIndex.item() ])
+                confuseMat5[labelIndex.item() ] += (torch.ones((classNum)) / 5 )[top5Predict]
                 
                 imgIndex = errorInfos5[0][j] + i * 256
                 top5Result = getClassNameByTensor(top5Predict, valDataSet)
