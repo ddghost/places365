@@ -359,7 +359,7 @@ def checkErrorImage(val_loader, model, criterion):
             for j in range(errorInfos5[0].size(0)):
                 top5Predict = errorInfos5[1][j]
                 labelIndex = errorInfos1[2][j].view(-1)
-                confueMat5[labelIndex.item() ] += (torch.ones((1,365)) / 5 )[top5Predict]
+                confueMat5[labelIndex.item() ] += (torch.ones((classNum)) / 5 )[top5Predict]
                 
                 imgIndex = errorInfos5[0][j] + i * 256
                 top5Result = getClassNameByTensor(top5Predict, valDataSet)
