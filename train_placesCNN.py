@@ -352,7 +352,7 @@ def checkErrorImage(val_loader, model, criterion):
     # 设定写入模式
     statistic_write = csv.writer(statisticFile, dialect='excel')
     # 写入具体内容
-    csv_header=['className', 'top1ErrorNum', 'top1top3ErrorClassName', 'top1top3value'
+    csv_header=['className', 'top1ErrorNum', 'top1top3ErrorClassName', 'top1top3value',
                 'top5ErrorNum', 'top5top3ErrorClassName', 'top5top3value']
     statistic_write.writerow(csv_header)
     bar = progressbar.progressbar(len(val_loader))
@@ -416,7 +416,7 @@ def checkErrorImage(val_loader, model, criterion):
         top5top3value, pred = confuseMat5[i].topk(3)
         top5ErrorNum = confuseMat5[i].sum().item() / 5
         top5top3ErrorClassName = getClassNameByTensor(pred, valDataSet)
-        row = [nowClassName, top1ErrorNum, top1top3ErrorClassName, str(top1top3value)
+        row = [nowClassName, top1ErrorNum, top1top3ErrorClassName, str(top1top3value),
                 top5ErrorNum, top5top3ErrorClassName, str(top5top3value)]
         statistic_write.writerow(row)
     errorImgFile5.close()
