@@ -342,6 +342,8 @@ def checkErrorImage(val_loader, model, criterion):
     confuseMat5 = torch.zeros(classNum, classNum)
 
     errorImgFile = open('errorImgFile.txt','w')
+
+    bar = progressbar.progressbar(len(val_loader))
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
             target = target.cuda(non_blocking=True)
@@ -378,6 +380,8 @@ def checkErrorImage(val_loader, model, criterion):
             # measure elapsed time
             batch_time.update(time.time() - end)
             end = time.time()
+            bar.output(i+1)
+    print()
     errorImgFile.close()
     errorImgFile.write(confuseMat5)
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
