@@ -77,6 +77,8 @@ def main():
         model  = wideresnet.resnet50(num_classes=args.num_classes)
     elif args.arch.lower().startswith('se'):
         model  = SENet.se_resnet152(num_classes=args.num_classes)
+    elif args.arch.lower().startswith('new'):
+        model  = SENet.se_resnet(num_classes=args.num_classes)
     else:
         model = models.__dict__[args.arch](num_classes=args.num_classes)
 
