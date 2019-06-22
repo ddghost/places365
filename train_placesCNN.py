@@ -153,7 +153,7 @@ def main():
         num_epochs = 30
         fcModel = SENet.simpleFcNet(365)
         fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
-        trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel)
+        trainFc(midOutputs, args.lr, num_epochs, criterion, optimizer, fcModel)
         del model
         return
     else:
@@ -257,6 +257,10 @@ class AverageMeter(object):
 def adjust_learning_rate(optimizer, epoch):
     """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
     lr = args.lr * (0.1 ** (epoch // 30))
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+
+def update_lr(optimizer, lr):    
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
@@ -444,13 +448,14 @@ def getMidOutputs(loader, model):
         bar.clear()
     return midOutputs
 
-def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
+def trainFc(midOutputs, learning-rate, num_epochs, criterion, optimizer, fcModel):
+
     for epoch in range(num_epochs):
         epoch_loss = 0.0
         total = 0
         correct = 0
         bar = progressbar.progressbar(len(midOutputs) )
-
+       
         for i, (images, target) in enumerate(midOutputs):
 
             fcModel.train()
@@ -485,7 +490,7 @@ def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
         save_checkpoint({
                 'epoch': epoch + 1,
                 'arch': args.arch,
-                'state_dict': model.state_dict(),
+                'state_dict': fcModel.state_dict(),
                 'best_prec1': best_prec1,
             }, True, filename='nnModel')
 
