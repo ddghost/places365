@@ -448,7 +448,7 @@ def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
         epoch_loss = 0.0
         total = 0
         correct = 0
-        bar = progressbar(len(train_loader) )
+        bar = progressbar(len(midOutputs) )
 
         for i, (images, labels) in enumerate(midOutputs):
             images = images.to(device)
