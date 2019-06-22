@@ -140,23 +140,28 @@ def main():
     # define loss function (criterion) and pptimizer
     criterion = nn.CrossEntropyLoss().cuda()
 
-    optimizer = torch.optim.SGD(model.parameters(), args.lr,
-                                momentum=args.momentum,
-                                weight_decay=args.weight_decay)
+    
 
     
 
     if args.evaluate:
         #checkErrorImage(val_loader, model, criterion)
         midOutputs = getMidOutputs(train_loader, model)
+        del model
 
+        optimizer = torch.optim.SGD(fcModel.parameters(), args.lr,
+                                momentum=args.momentum,
+                                weight_decay=args.weight_decay)
         num_epochs = 100
         fcModel = SENet.simpleFcNet(365)
         fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
         trainFc(midOutputs, 0.001, num_epochs, criterion, optimizer, fcModel)
-        del model
+        
         return
     else:
+        optimizer = torch.optim.SGD(model.parameters(), args.lr,
+                                momentum=args.momentum,
+                                weight_decay=args.weight_decay)
         for epoch in range(args.start_epoch, args.epochs):
             adjust_learning_rate(optimizer, epoch)
 
