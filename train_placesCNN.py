@@ -151,7 +151,7 @@ def main():
                                 weight_decay=args.weight_decay)
         num_epochs = 60
         validateFc(trainMidOutputs, fcModel, criterion)
-        trainFc(trainMidOutputs, 0.01, num_epochs, criterion, optimizer, fcModel)
+        trainFc(trainMidOutputs, 1e-4, num_epochs, criterion, optimizer, fcModel)
 
         valMidOutputs = getMidOutputs(val_loader, model)
         validateFc(valMidOutputs, fcModel, criterion)
