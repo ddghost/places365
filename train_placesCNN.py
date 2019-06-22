@@ -143,7 +143,7 @@ def main():
     if args.evaluate:
         #checkErrorImage(val_loader, model, criterion)
         trainMidOutputs = getMidOutputs(train_loader, model)
-        del model
+        
         fcModel = SENet.simpleFcNet(365)
         fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
         optimizer = torch.optim.SGD(fcModel.parameters(), args.lr,
