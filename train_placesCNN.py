@@ -89,8 +89,8 @@ def main():
         model.cuda()
     else:
         model = torch.nn.DataParallel(model, device_ids).cuda()
-    
-    
+
+
 
     # optionally resume from a checkpoint
     if args.resume:
@@ -144,8 +144,11 @@ def main():
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
 
+    
+
     if args.evaluate:
-        checkErrorImage(val_loader, model, criterion)
+        #checkErrorImage(val_loader, model, criterion)
+        midOutputs = getMidoutputs()
         return
     else:
         for epoch in range(args.start_epoch, args.epochs):
@@ -219,41 +222,6 @@ def train(train_loader, model, criterion, optimizer, epoch):
     #print()
     print('Epoch waste time {}s'.format(time.perf_counter()- start) )
 
-def validate(val_loader, model, criterion):
-    batch_time = AverageMeter()
-    losses = AverageMeter()
-    top1 = AverageMeter()
-    top5 = AverageMeter()
-
-    # switch to evaluate mode
-    model.eval()
-
-    end = time.time()
-
-    with torch.no_grad():
-        for i, (input, target) in enumerate(val_loader):
-            target = target.cuda(non_blocking=True)
-
-            # compute output
-            output = model(input)
-            loss = criterion(output, target)
-
-            # measure accuracy and record loss
-            prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
-            losses.update(loss.item(), input.size(0))
-
-            top1.update(prec1.item(), input.size(0))
-            top5.update(prec5.item(), input.size(0))
-
-            # measure elapsed time
-            batch_time.update(time.time() - end)
-            end = time.time()
-
-
-    print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
-          .format(top1=top1, top5=top5))
-
-    return top1.avg
 
 
 def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
@@ -444,6 +412,27 @@ def checkErrorImage(val_loader, model, criterion):
           .format(top1=top1, top5=top5))
 
     return top1.avg
+
+
+def getMidOutputs(loader, model):
+    batch_time = AverageMeter()
+    losses = AverageMeter()
+
+    # switch to evaluate mode
+    model.eval()
+    end = time.time()
+    midOutputs = [] 
+    with torch.no_grad():
+        for i, (input, target) in enumerate(loader):
+            target = target.cuda(non_blocking=True)
+            # compute output
+            output = model(input)
+            midOutputs.append( output.cpu(), target.cpu() )
+            # measure accuracy and record loss
+            batch_time.update(time.time() - end)
+            end = time.time()
+    return midOutputs
+
 
 
 if __name__ == '__main__':
