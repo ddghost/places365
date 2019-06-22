@@ -149,6 +149,7 @@ def main():
     if args.evaluate:
         #checkErrorImage(val_loader, model, criterion)
         midOutputs = getMidOutputs(train_loader, model)
+		del train_loader
         return
     else:
         for epoch in range(args.start_epoch, args.epochs):
@@ -427,7 +428,7 @@ def getMidOutputs(loader, model):
             target = target.cuda(non_blocking=True)
             # compute output
             output = model(input)
-            midOutputs.append( output.cpu(), target.cpu() )
+            midOutputs.append( (output.cpu(), target.cpu()) )
             # measure accuracy and record loss
             batch_time.update(time.time() - end)
             end = time.time()
