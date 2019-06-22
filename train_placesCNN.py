@@ -450,10 +450,10 @@ def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
         correct = 0
         bar = progressbar.progressbar(len(midOutputs) )
 
-        for i, (images, labels) in enumerate(midOutputs):
+        for i, (images, target) in enumerate(midOutputs):
 
             fcModel.train()
-            labels = labels.cuda(non_blocking=True)
+            target = target.cuda(non_blocking=True)
             input_var = torch.autograd.Variable(images)
             target_var = torch.autograd.Variable(target)
 
