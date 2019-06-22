@@ -152,7 +152,7 @@ def main():
 
         num_epochs = 30
         fcModel = SENet.simpleFcNet(365)
-		fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
+		fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda())
         trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel)
         del model
         return
