@@ -483,7 +483,7 @@ def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
                 'arch': args.arch,
                 'state_dict': model.state_dict(),
                 'best_prec1': best_prec1,
-            }, True, filename='nnModel'):)
+            }, True, filename='nnModel')
 
         if (epoch+1) % 10 == 0:
             curr_lr /= 10
