@@ -149,7 +149,7 @@ def main():
         optimizer = torch.optim.SGD(fcModel.parameters(), args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
-        num_epochs = 10
+        num_epochs = 200
         
         trainFc(trainMidOutputs, 0.01, num_epochs, criterion, optimizer, fcModel)
 
@@ -534,7 +534,7 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
                 'best_prec1': best_prec1,
             }, True, filename='nnModel')
 
-        if (epoch+1) % 30 == 0:
+        if (epoch+1) % 64 == 0:
             curr_lr /= 10
             update_lr(optimizer, curr_lr)
 
