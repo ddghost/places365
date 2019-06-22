@@ -493,6 +493,8 @@ def getMidOutputs(loader, model):
             batch_time.update(time.time() - end)
             end = time.time()
             bar.output(i+1)
+            if(i == 50):
+                break
         print()
     return midOutputs
 
@@ -520,7 +522,7 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
             _, predicted = torch.max(outputs.data, 1)
             correct += (predicted == target_var).sum().item()
             total += target_var.size(0)
-
+        random.shuffle(midOutputs)
         epoch_loss /= len(midOutputs)
 
 
@@ -535,8 +537,8 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
                 'state_dict': fcModel.state_dict(),
                 'best_prec1': best_prec1,
             }, True, filename='nnModel')
+        if (epoch+1) % 40 == 0:
 
-        if (epoch+1) % 30 == 0:
             curr_lr /= 10
             update_lr(optimizer, curr_lr)
 
