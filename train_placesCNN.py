@@ -149,7 +149,7 @@ def main():
         optimizer = torch.optim.SGD(fcModel.parameters(), args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
-        num_epochs = 120
+        num_epochs = 160
 
         validateFc(trainMidOutputs, fcModel, criterion)
         validateFc(valMidOutputs, fcModel, criterion)
