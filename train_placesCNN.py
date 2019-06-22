@@ -154,7 +154,7 @@ def main():
         trainFc(trainMidOutputs, 0.01, num_epochs, criterion, optimizer, fcModel)
 
         valMidOutputs = getMidOutputs(val_loader, fcModel)
-        validate(valMidOutputs, criterion, fcModel)
+        validate(valMidOutputs, fcModel, criterion)
         return
     else:
         optimizer = torch.optim.SGD(model.parameters(), args.lr,
