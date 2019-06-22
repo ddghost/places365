@@ -149,7 +149,7 @@ def main():
     if args.evaluate:
         #checkErrorImage(val_loader, model, criterion)
         midOutputs = getMidOutputs(train_loader, model)
-		del train_loader
+        del model
         return
     else:
         for epoch in range(args.start_epoch, args.epochs):
