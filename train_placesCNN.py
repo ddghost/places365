@@ -423,7 +423,7 @@ def getMidOutputs(loader, model):
     model.eval()
     end = time.time()
     midOutputs = [] 
-    bar = progressbar.progressbar(len(val_loader))
+    bar = progressbar.progressbar(len(loader))
     with torch.no_grad():
         for i, (input, target) in enumerate(loader):
             target = target.cuda(non_blocking=True)
