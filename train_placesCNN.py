@@ -548,7 +548,7 @@ def validateFc(valMidOutputs, fcModel, criterion):
     total = 0
     correct = 0
     with torch.no_grad():
-        for i, (images, target) in enumerate(midOutputs):
+        for i, (images, target) in enumerate(valMidOutputs):
 
             fcModel.eval()
 
@@ -563,8 +563,8 @@ def validateFc(valMidOutputs, fcModel, criterion):
             _, predicted = torch.max(outputs.data, 1)
             correct += (predicted == target_var).sum().item()
             total += target_var.size(0)
-            epoch_loss /= len(midOutputs)
-            val_acc = correct / total * 100
+        epoch_loss /= len(valMidOutputs)
+        val_acc = correct / total * 100
         
         print ("epoch [{}/{}], avg_loss: {:.4f}, val_acc: {:.4f}"
                .format(epoch+1, num_epochs, epoch_loss, val_acc))
