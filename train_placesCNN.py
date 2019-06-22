@@ -491,7 +491,7 @@ def getMidOutputs(loader, model):
             batch_time.update(time.time() - end)
             end = time.time()
             bar.output(i+1)
-        bar.clear()
+        print()
     return midOutputs
 
 def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel):
