@@ -153,7 +153,7 @@ def main():
         
         trainFc(trainMidOutputs, 0.01, num_epochs, criterion, optimizer, fcModel)
 
-        valMidOutputs = getMidOutputs(val_loader, fcModel)
+        valMidOutputs = getMidOutputs(val_loader, model)
         validate(valMidOutputs, fcModel, criterion)
         return
     else:
