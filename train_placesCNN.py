@@ -148,13 +148,13 @@ def main():
         #checkErrorImage(val_loader, model, criterion)
         midOutputs = getMidOutputs(train_loader, model)
         del model
-
+        fcModel = SENet.simpleFcNet(365)
+        fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
         optimizer = torch.optim.SGD(fcModel.parameters(), args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
         num_epochs = 100
-        fcModel = SENet.simpleFcNet(365)
-        fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
+        
         trainFc(midOutputs, 0.001, num_epochs, criterion, optimizer, fcModel)
         
         return
