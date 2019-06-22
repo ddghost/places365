@@ -536,7 +536,7 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
                 'best_prec1': best_prec1,
             }, True, filename='nnModel')
 
-        if (epoch+1) % 20 == 0:
+        if (epoch+1) % 30 == 0:
             curr_lr /= 10
             update_lr(optimizer, curr_lr)
 
