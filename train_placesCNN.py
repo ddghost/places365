@@ -153,7 +153,7 @@ def main():
         num_epochs = 30
         fcModel = SENet.simpleFcNet(365)
         fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
-        trainFc(midOutputs, args.lr, num_epochs, criterion, optimizer, fcModel)
+        trainFc(midOutputs, 0.001, num_epochs, criterion, optimizer, fcModel)
         del model
         return
     else:
@@ -454,8 +454,7 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
         epoch_loss = 0.0
         total = 0
         correct = 0
-        bar = progressbar.progressbar(len(midOutputs) )
-       
+
         for i, (images, target) in enumerate(midOutputs):
 
             fcModel.train()
@@ -475,9 +474,6 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
             _, predicted = torch.max(outputs.data, 1)
             correct += (predicted == target_var).sum().item()
             total += target_var.size(0)
-            bar.output(i+1)
-            
-        bar.clear()
         
         epoch_loss /= len(midOutputs)
 
