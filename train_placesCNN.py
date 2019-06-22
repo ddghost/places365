@@ -148,7 +148,7 @@ def main():
 
     if args.evaluate:
         #checkErrorImage(val_loader, model, criterion)
-        midOutputs = getMidOutputs()
+        midOutputs = getMidOutputs(train_loader, model)
         return
     else:
         for epoch in range(args.start_epoch, args.epochs):
