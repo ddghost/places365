@@ -150,7 +150,7 @@ def main():
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
         num_epochs = 200
-        
+        validateFc(trainMidOutputs, fcModel, criterion)
         trainFc(trainMidOutputs, 0.01, num_epochs, criterion, optimizer, fcModel)
 
         valMidOutputs = getMidOutputs(val_loader, model)

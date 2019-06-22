@@ -146,7 +146,12 @@ class simpleFcNet(nn.Module):
     def __init__(self, num_classes):
         super(simpleFcNet, self).__init__()
         self.fc = nn.Linear(num_classes, num_classes)
- 
+        self.initialize()
+        
+    def initialize(self):
+        nn.init.eye_(self.fc.weight)
+        nn.init.constant_(self.fc.bias, 0)
+
     def forward(self, x):
         out = x
         out = out.view(out.size(0), -1)
