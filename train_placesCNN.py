@@ -566,8 +566,8 @@ def validateFc(valMidOutputs, fcModel, criterion):
         epoch_loss /= len(valMidOutputs)
         val_acc = correct / total * 100
         
-        print ("epoch [{}/{}], avg_loss: {:.4f}, val_acc: {:.4f}"
-               .format(epoch+1, num_epochs, epoch_loss, val_acc))
+        print ("avg_loss: {:.4f}, val_acc: {:.4f}"
+               .format(epoch_loss, val_acc))
 
 
 if __name__ == '__main__':
