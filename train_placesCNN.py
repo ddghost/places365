@@ -475,14 +475,13 @@ def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
         bar.clear()
         
         epoch_loss /= len(midOutputs)
-        epoch_loss_arr.append(epoch_loss)
+
 
         train_acc = correct / total * 100
         
         print ("epoch [{}/{}], avg_loss: {:.4f}, train_acc: {:.4f}"
                .format(epoch+1, num_epochs, epoch_loss, train_acc))
-        
-        train_acc_arr.append(train_acc)
+
         save_checkpoint({
                 'epoch': epoch + 1,
                 'arch': args.arch,
@@ -493,7 +492,7 @@ def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
         if (epoch+1) % 10 == 0:
             curr_lr /= 10
             update_lr(optimizer, curr_lr)
-    return epoch_loss_arr, train_acc_arr
+
 
 if __name__ == '__main__':
     main()
