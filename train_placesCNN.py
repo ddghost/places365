@@ -143,19 +143,19 @@ def main():
     if args.evaluate:
         #checkErrorImage(val_loader, model, criterion)
         trainMidOutputs = getMidOutputs(train_loader, model)
-        
+        valMidOutputs = getMidOutputs(val_loader, model)
         fcModel = SENet.simpleFcNet(365)
         fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
         optimizer = torch.optim.SGD(fcModel.parameters(), args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
         num_epochs = 120
+
         validateFc(trainMidOutputs, fcModel, criterion)
+        validateFc(valMidOutputs, fcModel, criterion)
+
         trainFc(trainMidOutputs, 1e-4, num_epochs, criterion, optimizer, fcModel)
 
-
-
-        valMidOutputs = getMidOutputs(val_loader, model)
         validateFc(valMidOutputs, fcModel, criterion)
         return
     else:
