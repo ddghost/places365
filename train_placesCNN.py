@@ -544,8 +544,6 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
 
 
 def validateFc(valMidOutputs, fcModel, criterion):
-    curr_lr = learningRate
-    
     epoch_loss = 0.0
     total = 0
     correct = 0
