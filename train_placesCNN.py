@@ -491,8 +491,6 @@ def getMidOutputs(loader, model):
             batch_time.update(time.time() - end)
             end = time.time()
             bar.output(i+1)
-            if(i == 50):
-                break
         bar.clear()
     return midOutputs
 
@@ -504,9 +502,7 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
         correct = 0
 
         for i, (images, target) in enumerate(midOutputs):
-
             fcModel.train()
-
             target = target.cuda(non_blocking=True)
             input_var = torch.autograd.Variable(images)
             target_var = torch.autograd.Variable(target)
@@ -565,7 +561,7 @@ def validateFc(valMidOutputs, fcModel, criterion):
             total += target_var.size(0)
         epoch_loss /= len(valMidOutputs)
         val_acc = correct / total * 100
-        
+        print()
         print ("avg_loss: {:.4f}, val_acc: {:.4f}"
                .format(epoch_loss, val_acc))
 
