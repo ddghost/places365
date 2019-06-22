@@ -152,6 +152,7 @@ def main():
 
         num_epochs = 30
         fcModel = SENet.simpleFcNet(365)
+		fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
         trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel)
         del model
         return
@@ -453,7 +454,7 @@ def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
         for i, (images, target) in enumerate(midOutputs):
 
             fcModel.train()
-            images = images.cuda()
+
             target = target.cuda(non_blocking=True)
             input_var = torch.autograd.Variable(images)
             target_var = torch.autograd.Variable(target)
