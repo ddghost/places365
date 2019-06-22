@@ -474,7 +474,7 @@ def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
             
         bar.clear()
         
-        epoch_loss /= len(train_loader)
+        epoch_loss /= len(midOutputs)
         epoch_loss_arr.append(epoch_loss)
 
         train_acc = correct / total * 100
