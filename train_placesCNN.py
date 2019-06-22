@@ -140,13 +140,9 @@ def main():
     # define loss function (criterion) and pptimizer
     criterion = nn.CrossEntropyLoss().cuda()
 
-    
-
-    
-
     if args.evaluate:
         #checkErrorImage(val_loader, model, criterion)
-        midOutputs = getMidOutputs(train_loader, model)
+        trainMidOutputs = getMidOutputs(train_loader, model)
         del model
         fcModel = SENet.simpleFcNet(365)
         fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
@@ -155,8 +151,10 @@ def main():
                                 weight_decay=args.weight_decay)
         num_epochs = 100
         
-        trainFc(midOutputs, 0.001, num_epochs, criterion, optimizer, fcModel)
-        
+        trainFc(trainMidOutputs, 0.01, num_epochs, criterion, optimizer, fcModel)
+
+        valMidOutputs = getMidOutputs(val_loader, model)
+        validateFc(valMidOutputs, criterion, fcModel)
         return
     else:
         optimizer = torch.optim.SGD(model.parameters(), args.lr,
@@ -233,7 +231,48 @@ def train(train_loader, model, criterion, optimizer, epoch):
     #print()
     print('Epoch waste time {}s'.format(time.perf_counter()- start) )
 
+def validate(val_loader, model, criterion):
+    batch_time = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+    top5 = AverageMeter()
 
+    # switch to evaluate mode
+    model.eval()
+
+    end = time.time()
+    for i, (input, target) in enumerate(val_loader):
+        target = target.cuda(async=True)
+        input_var = torch.autograd.Variable(input, volatile=True)
+        target_var = torch.autograd.Variable(target, volatile=True)
+
+        # compute output
+        output = model(input_var)
+        loss = criterion(output, target_var)
+
+        # measure accuracy and record loss
+        prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
+        losses.update(loss.data[0], input.size(0))
+        top1.update(prec1[0], input.size(0))
+        top5.update(prec5[0], input.size(0))
+
+        # measure elapsed time
+        batch_time.update(time.time() - end)
+        end = time.time()
+
+        if i % args.print_freq == 0:
+            print('Test: [{0}/{1}]\t'
+                  'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                  'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                  'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
+                  'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
+                   i, len(val_loader), batch_time=batch_time, loss=losses,
+                   top1=top1, top5=top5))
+
+    print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
+          .format(top1=top1, top5=top5))
+
+    return top1.avg
 
 def save_checkpoint(state, is_best, filename='checkpoint.pth.tar'):
     torch.save(state, filename + '_latest.pth.tar')
@@ -306,6 +345,9 @@ def getClassNameByTensor(checkTensor, dataSet):
     for i in range(checkTensor.shape[0] ):
         msg += dataSet.classes[checkTensor[i] ]  + ' '
     return msg
+
+
+
 
 def saveTensorAsImg(path, tensor):
     unloader = transforms.ToPILImage()
@@ -499,6 +541,49 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
             curr_lr /= 10
             update_lr(optimizer, curr_lr)
 
+
+def validateFc(valMidOutputs, criterion, fcModel):
+    batch_time = AverageMeter()
+    losses = AverageMeter()
+    top1 = AverageMeter()
+    top5 = AverageMeter()
+
+    # switch to evaluate mode
+    fcModel.eval()
+
+    end = time.time()
+    for i, (input, target) in enumerate(valMidOutputs):
+        target = target.cuda(async=True)
+        input_var = torch.autograd.Variable(input, volatile=True)
+        target_var = torch.autograd.Variable(target, volatile=True)
+
+        # compute output
+        output = fcModel(input_var)
+        loss = criterion(output, target_var)
+
+        # measure accuracy and record loss
+        prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
+        losses.update(loss.data[0], input.size(0))
+        top1.update(prec1[0], input.size(0))
+        top5.update(prec5[0], input.size(0))
+
+        # measure elapsed time
+        batch_time.update(time.time() - end)
+        end = time.time()
+
+        if i % args.print_freq == 0:
+            print('Test: [{0}/{1}]\t'
+                  'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                  'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                  'Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t'
+                  'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
+                   i, len(val_loader), batch_time=batch_time, loss=losses,
+                   top1=top1, top5=top5))
+
+    print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
+          .format(top1=top1, top5=top5))
+
+    return top1.avg
 
 if __name__ == '__main__':
     main()
