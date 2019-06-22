@@ -479,7 +479,7 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
             _, predicted = torch.max(outputs.data, 1)
             correct += (predicted == target_var).sum().item()
             total += target_var.size(0)
-            print(i)
+
         epoch_loss /= len(midOutputs)
 
 
