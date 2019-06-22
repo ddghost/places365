@@ -423,6 +423,7 @@ def getMidOutputs(loader, model):
     model.eval()
     end = time.time()
     midOutputs = [] 
+    bar = progressbar.progressbar(len(val_loader))
     with torch.no_grad():
         for i, (input, target) in enumerate(loader):
             target = target.cuda(non_blocking=True)
@@ -432,6 +433,8 @@ def getMidOutputs(loader, model):
             # measure accuracy and record loss
             batch_time.update(time.time() - end)
             end = time.time()
+            bar.output(i+1)
+        bar.clear()
     return midOutputs
 
 
