@@ -451,12 +451,14 @@ def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
         bar = progressbar.progressbar(len(midOutputs) )
 
         for i, (images, labels) in enumerate(midOutputs):
-            images = images.to(device)
-            labels = labels.to(device)
+
             fcModel.train()
-            outputs = fcModel(images)
-            
-            loss = criterion(outputs, labels)
+            labels = labels.cuda(non_blocking=True)
+            input_var = torch.autograd.Variable(images)
+            target_var = torch.autograd.Variable(target)
+
+            outputs = fcModel(input_var)
+            loss = criterion(outputs, target_var)
             epoch_loss += loss.item()
             
             optimizer.zero_grad()
@@ -464,8 +466,8 @@ def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
             optimizer.step()
             
             _, predicted = torch.max(outputs.data, 1)
-            correct += (predicted == labels).sum().item()
-            total += labels.size(0)
+            correct += (predicted == target_var).sum().item()
+            total += target_var.size(0)
             bar.output(i+1)
             
         bar.clear()
