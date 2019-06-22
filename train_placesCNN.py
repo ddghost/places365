@@ -154,7 +154,7 @@ def main():
         trainFc(trainMidOutputs, 0.01, num_epochs, criterion, optimizer, fcModel)
 
         valMidOutputs = getMidOutputs(val_loader, model)
-        validateFc(valMidOutputs, criterion, fcModel)
+        validate(valMidOutputs, criterion, fcModel)
         return
     else:
         optimizer = torch.optim.SGD(model.parameters(), args.lr,
@@ -541,8 +541,8 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
             curr_lr /= 10
             update_lr(optimizer, curr_lr)
 
-
-def validateFc(valMidOutputs, criterion, fcModel):
+'''
+def validateFc(valMidOutputs, fcModel, criterion):
     batch_time = AverageMeter()
     losses = AverageMeter()
     top1 = AverageMeter()
@@ -553,7 +553,7 @@ def validateFc(valMidOutputs, criterion, fcModel):
 
     end = time.time()
     for i, (input, target) in enumerate(valMidOutputs):
-        target = target.cuda(async=True)
+        target = target.cuda(non_blocking=True)
         input_var = torch.autograd.Variable(input, volatile=True)
         target_var = torch.autograd.Variable(target, volatile=True)
 
@@ -584,7 +584,7 @@ def validateFc(valMidOutputs, criterion, fcModel):
           .format(top1=top1, top5=top5))
 
     return top1.avg
-
+'''
 if __name__ == '__main__':
     main()
 
