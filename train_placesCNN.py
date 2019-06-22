@@ -149,6 +149,9 @@ def main():
     if args.evaluate:
         #checkErrorImage(val_loader, model, criterion)
         midOutputs = getMidOutputs(train_loader, model)
+
+        num_epochs = 30
+        trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel)
         del model
         return
     else:
@@ -437,7 +440,53 @@ def getMidOutputs(loader, model):
         bar.clear()
     return midOutputs
 
+def trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel):
+    for epoch in range(num_epochs):
+        epoch_loss = 0.0
+        total = 0
+        correct = 0
+        bar = progressbar(len(train_loader) )
 
+        for i, (images, labels) in enumerate(midOutputs):
+            images = images.to(device)
+            labels = labels.to(device)
+            fcModel.train()
+            outputs = fcModel(images)
+            
+            loss = criterion(outputs, labels)
+            epoch_loss += loss.item()
+            
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            
+            _, predicted = torch.max(outputs.data, 1)
+            correct += (predicted == labels).sum().item()
+            total += labels.size(0)
+            bar.output(i+1)
+            
+        bar.clear()
+        
+        epoch_loss /= len(train_loader)
+        epoch_loss_arr.append(epoch_loss)
+
+        train_acc = correct / total * 100
+        
+        print ("epoch [{}/{}], avg_loss: {:.4f}, train_acc: {:.4f}"
+               .format(epoch+1, num_epochs, epoch_loss, train_acc))
+        
+        train_acc_arr.append(train_acc)
+        save_checkpoint({
+                'epoch': epoch + 1,
+                'arch': args.arch,
+                'state_dict': model.state_dict(),
+                'best_prec1': best_prec1,
+            }, True, filename='nnModel'):)
+
+        if (epoch+1) % 10 == 0:
+            curr_lr /= 10
+            update_lr(optimizer, curr_lr)
+    return epoch_loss_arr, train_acc_arr
 
 if __name__ == '__main__':
     main()
