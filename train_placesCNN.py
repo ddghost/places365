@@ -448,8 +448,8 @@ def getMidOutputs(loader, model):
         bar.clear()
     return midOutputs
 
-def trainFc(midOutputs, learning-rate, num_epochs, criterion, optimizer, fcModel):
-
+def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel):
+    curr_lr = learningRate
     for epoch in range(num_epochs):
         epoch_loss = 0.0
         total = 0
