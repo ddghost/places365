@@ -150,7 +150,7 @@ def main():
         #checkErrorImage(val_loader, model, criterion)
         midOutputs = getMidOutputs(train_loader, model)
 
-        num_epochs = 30
+        num_epochs = 100
         fcModel = SENet.simpleFcNet(365)
         fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
         trainFc(midOutputs, 0.001, num_epochs, criterion, optimizer, fcModel)
@@ -490,7 +490,7 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
                 'best_prec1': best_prec1,
             }, True, filename='nnModel')
 
-        if (epoch+1) % 10 == 0:
+        if (epoch+1) % 30 == 0:
             curr_lr /= 10
             update_lr(optimizer, curr_lr)
 
