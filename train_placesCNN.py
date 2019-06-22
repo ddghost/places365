@@ -151,6 +151,7 @@ def main():
         midOutputs = getMidOutputs(train_loader, model)
 
         num_epochs = 30
+        fcModel = SENet.simpleFcNet(365)
         trainFc(midOutputs, num_epochs, criterion, optimizer, fcModel)
         del model
         return

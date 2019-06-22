@@ -70,7 +70,7 @@ class SEBottleneck(nn.Module):
 
 class newBottleneck(nn.Module):
     expansion = 4
-    def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16, haveSe=False):
+    def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16):
         super(newBottleneck, self).__init__()
         self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(planes)
@@ -81,10 +81,8 @@ class newBottleneck(nn.Module):
         self.conv3 = nn.Conv2d(planes, planes * self.expansion, kernel_size=1, bias=False)
         self.bn3 = nn.BatchNorm2d(planes * self.expansion)
         self.relu = nn.ReLU(inplace=True)
-        if(haveSe):
-            self.se = se_layer(planes * self.expansion)
-        else:
-            self.se = None
+        self.se = se_layer(planes * self.expansion)
+        
         self.downsample = downsample
         self.stride = stride
 
@@ -107,8 +105,8 @@ class newBottleneck(nn.Module):
 
         out = self.conv3(out)
         out = self.bn3(out)
-        if(self.se ):
-            out = self.se(out)
+
+        out = self.se(out)
         if self.downsample is not None:
             residual = self.downsample(x)
 
@@ -144,7 +142,16 @@ def se_resnet152(pretrained=False, **kwargs):
         #model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
     return model
 
-
+class simpleFcNet(nn.Module):
+    def __init__(self, num_classes):
+        super(simpleFcNet, self).__init__()
+        self.fc = nn.Linear(num_classes, num_classes)
+ 
+    def forward(self, x):
+        out = x
+        out = out.view(out.size(0), -1)
+        out = self.fc(out)
+        return out
 
 def se_resnet(pretrained=False, **kwargs):
     """Constructs a ResNet-50 model.
