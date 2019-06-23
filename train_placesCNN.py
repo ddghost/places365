@@ -17,6 +17,7 @@ import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
+import torch.nn.functional as F
 
 import wideresnet
 import pdb
@@ -254,7 +255,7 @@ def validate(val_loader, model, criterion):
             loss = criterion(output, target)
 
             # measure accuracy and record loss
-            prec1, prec5 = accuracy(output.data, target, topk=(5, 15))
+            prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
             losses.update(loss.item(), input.size(0))
             top1.update(prec1.item(), input.size(0))
             top5.update(prec5.item(), input.size(0))
@@ -489,6 +490,7 @@ def getMidOutputs(loader, model, topkNum=None):
             # compute output
             output = model(input)
             output = output.cpu()
+            output = F.softmax(output)
             if(topkNum is not None):
                 _, pred = output.topk(topkNum, 1)
                 mask = torch.zeros(output.shape)
