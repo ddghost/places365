@@ -488,12 +488,14 @@ def getMidOutputs(loader, model, topkNum=None):
             target = target.cuda(non_blocking=True)
             # compute output
             output = model(input)
-            
+            output = output.cpu()
             if(topkNum is not None):
                 _, pred = output.topk(topkNum, 1)
-                mask = torch.zeros(output.shape).cuda()
-                mask[pred] = 1
-                output *= mask
+                mask = torch.zeros(output.shape)
+                    for i in range(pred.shape[0]):
+                mask[i, pred[i]] = 1
+                output *= torch.FloatTensor(mask)
+
             midOutputs.append( (output.cpu(), target.cpu()) )
             # measure accuracy and record loss
             batch_time.update(time.time() - end)
