@@ -493,7 +493,8 @@ def getMidOutputs(loader, model):
             batch_time.update(time.time() - end)
             end = time.time()
             bar.output(i+1)
-
+            if(i == 50):
+                break
         print()
     return midOutputs
 
@@ -522,7 +523,7 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel,
             correct += (predicted == target_var).sum().item()
             total += target_var.size(0)
             if(validateMidoutputs is not None):
-                validateFc(validateMidoutputs, fcModel, criterion)
+                validate(validateMidoutputs, fcModel, criterion)
         random.shuffle(midOutputs)
         epoch_loss /= len(midOutputs)
 
