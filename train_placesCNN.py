@@ -497,7 +497,7 @@ def getMidOutputs(loader, model):
         print()
     return midOutputs
 
-def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel):
+def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel, validateMidoutputs=None):
     curr_lr = learningRate
     for epoch in range(num_epochs):
         epoch_loss = 0.0
@@ -521,6 +521,8 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel)
             _, predicted = torch.max(outputs.data, 1)
             correct += (predicted == target_var).sum().item()
             total += target_var.size(0)
+            if(validateMidoutputs is not None):
+                validateFc(validateMidoutputs, fcModel, criterion)
         random.shuffle(midOutputs)
         epoch_loss /= len(midOutputs)
 
