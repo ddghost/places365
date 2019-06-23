@@ -258,7 +258,7 @@ def validate(val_loader, model, criterion):
             # measure elapsed time
             batch_time.update(time.time() - end)
             end = time.time()
-
+            '''
             if i % args.print_freq == 0:
                 print('Test: [{0}/{1}]\t'
                       'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
@@ -267,7 +267,7 @@ def validate(val_loader, model, criterion):
                       'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
                        i, len(val_loader), batch_time=batch_time, loss=losses,
                        top1=top1, top5=top5))
-
+            '''
     print(' * Prec@1 {top1.avg:.3f} Prec@5 {top5.avg:.3f}'
           .format(top1=top1, top5=top5))
 
@@ -517,8 +517,8 @@ def trainFc(midOutputs, learningRate, num_epochs, criterion, optimizer, fcModel,
             _, predicted = torch.max(outputs.data, 1)
             correct += (predicted == target_var).sum().item()
             total += target_var.size(0)
-            if(validateMidoutputs is not None):
-                validate(validateMidoutputs, fcModel, criterion)
+        if(validateMidoutputs is not None):
+            validate(validateMidoutputs, fcModel, criterion)
         random.shuffle(midOutputs)
         epoch_loss /= len(midOutputs)
 
