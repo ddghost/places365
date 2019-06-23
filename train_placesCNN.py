@@ -153,7 +153,7 @@ def main():
         num_epochs = 180
         print('init train acc')
         validate(trainMidOutputs, fcModel, criterion)
-        print('init train acc')
+        print('init val acc')
         validate(valMidOutputs, fcModel, criterion)
 
         trainFc(trainMidOutputs, 1e-5, num_epochs, criterion, optimizer, fcModel, valMidOutputs)
