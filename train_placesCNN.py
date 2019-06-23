@@ -141,10 +141,10 @@ def main():
     criterion = nn.CrossEntropyLoss().cuda()
 
     if args.evaluate:
-        validate(val_loader, model, criterion)
-        '''
-        trainMidOutputs = getMidOutputs(train_loader, model)
-        valMidOutputs = getMidOutputs(val_loader, model)
+        #validate(val_loader, model, criterion)
+        
+        trainMidOutputs = getMidOutputs(train_loader, model, 15)
+        valMidOutputs = getMidOutputs(val_loader, model, 15)
         fcModel = SENet.simpleFcNet(365)
         fcModel = torch.nn.DataParallel(fcModel, device_ids).cuda()
         optimizer = torch.optim.SGD(fcModel.parameters(), args.lr,
@@ -160,7 +160,7 @@ def main():
 
         validate(trainMidOutputs, fcModel, criterion)
         validate(valMidOutputs, fcModel, criterion)
-        '''
+        
         return
     else:
         optimizer = torch.optim.SGD(model.parameters(), args.lr,
@@ -474,7 +474,7 @@ def checkErrorImage(val_loader, model, criterion):
     return top1.avg
 
 
-def getMidOutputs(loader, model):
+def getMidOutputs(loader, model, topkNum=None):
     batch_time = AverageMeter()
     losses = AverageMeter()
 
@@ -488,6 +488,12 @@ def getMidOutputs(loader, model):
             target = target.cuda(non_blocking=True)
             # compute output
             output = model(input)
+            
+            if(topkNum is not None):
+                _, pred = output.topk(topkNum, 1)
+                mask = torch.zeros(output.shape).cuda()
+                mask[pred] = 1
+                output *= mask
             midOutputs.append( (output.cpu(), target.cpu()) )
             # measure accuracy and record loss
             batch_time.update(time.time() - end)
