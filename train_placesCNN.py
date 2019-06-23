@@ -493,8 +493,7 @@ def getMidOutputs(loader, model):
             batch_time.update(time.time() - end)
             end = time.time()
             bar.output(i+1)
-            if(i == 50):
-                break
+
         print()
     return midOutputs
 
