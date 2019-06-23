@@ -490,12 +490,12 @@ def getMidOutputs(loader, model, topkNum=None):
             # compute output
             output = model(input)
             output = output.cpu()
-            output = F.softmax(output)
+            output = F.softmax(output, dim=1)
             if(topkNum is not None):
                 _, pred = output.topk(topkNum, 1)
                 mask = torch.zeros(output.shape)
-                for i in range(pred.shape[0]):
-                    mask[i, pred[i]] = 1
+                for j in range(pred.shape[0]):
+                    mask[j, pred[j]] = 1
                 output *= torch.FloatTensor(mask)
 
             midOutputs.append( (output.cpu(), target.cpu()) )
