@@ -246,10 +246,6 @@ def validate(val_loader, model, criterion):
     with torch.no_grad():
         for i, (input, target) in enumerate(val_loader):
             target = target.cuda(non_blocking=True)
-
-
-            # compute output
-            print(input.shape,target.shape)
             output = model(input)
             loss = criterion(output, target)
 
@@ -493,8 +489,7 @@ def getMidOutputs(loader, model):
             batch_time.update(time.time() - end)
             end = time.time()
             bar.output(i+1)
-            if(i == 50):
-                break
+
         print()
     return midOutputs
 
