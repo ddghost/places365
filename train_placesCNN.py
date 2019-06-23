@@ -141,7 +141,8 @@ def main():
     criterion = nn.CrossEntropyLoss().cuda()
 
     if args.evaluate:
-        #checkErrorImage(val_loader, model, criterion)
+        checkErrorImage(val_loader, model, criterion)
+        '''
         trainMidOutputs = getMidOutputs(train_loader, model)
         valMidOutputs = getMidOutputs(val_loader, model)
         fcModel = SENet.simpleFcNet(365)
@@ -159,6 +160,7 @@ def main():
 
         validate(trainMidOutputs, fcModel, criterion)
         validate(valMidOutputs, fcModel, criterion)
+        '''
         return
     else:
         optimizer = torch.optim.SGD(model.parameters(), args.lr,
@@ -396,7 +398,7 @@ def checkErrorImage(val_loader, model, criterion):
             loss = criterion(output, target)
 
             # measure accuracy and record loss
-            prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
+            prec1, prec5 = accuracy(output.data, target, topk=(5, 10))
             errorInfos1, errorInfos5 = getErrorImgInfo(output.data, target, topk=(1, 5))
             #top5Predict是top5预测结果，labelIndex是标签下标
             
