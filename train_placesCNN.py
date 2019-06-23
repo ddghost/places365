@@ -141,7 +141,7 @@ def main():
     criterion = nn.CrossEntropyLoss().cuda()
 
     if args.evaluate:
-        checkErrorImage(val_loader, model, criterion)
+        validate(val_loader, model, criterion)
         '''
         trainMidOutputs = getMidOutputs(train_loader, model)
         valMidOutputs = getMidOutputs(val_loader, model)
@@ -254,7 +254,7 @@ def validate(val_loader, model, criterion):
             loss = criterion(output, target)
 
             # measure accuracy and record loss
-            prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
+            prec1, prec5 = accuracy(output.data, target, topk=(1, 5, 10, 15, 20, 25))
             losses.update(loss.item(), input.size(0))
             top1.update(prec1.item(), input.size(0))
             top5.update(prec5.item(), input.size(0))
@@ -398,7 +398,7 @@ def checkErrorImage(val_loader, model, criterion):
             loss = criterion(output, target)
 
             # measure accuracy and record loss
-            prec1, prec5 = accuracy(output.data, target, topk=(5, 10))
+            prec1, prec5 = accuracy(output.data, target, topk=(1, 5))
             errorInfos1, errorInfos5 = getErrorImgInfo(output.data, target, topk=(1, 5))
             #top5Predict是top5预测结果，labelIndex是标签下标
             
