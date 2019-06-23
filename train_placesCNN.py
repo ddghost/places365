@@ -154,9 +154,9 @@ def main():
         validate(trainMidOutputs, fcModel, criterion)
         validate(valMidOutputs, fcModel, criterion)
 
-        trainFc(trainMidOutputs, 1e-4, num_epochs, criterion, optimizer, fcModel, valMidOutputs)
+        trainFc(trainMidOutputs, 1e-5, num_epochs, criterion, optimizer, fcModel, valMidOutputs)
 
-        validateFc(valMidOutputs, fcModel, criterion)
+        validate(valMidOutputs, fcModel, criterion)
         return
     else:
         optimizer = torch.optim.SGD(model.parameters(), args.lr,
