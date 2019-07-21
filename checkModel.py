@@ -43,8 +43,8 @@ def checkConvParameter(model):
 			weight = torch.exp( -torch.abs(weight) )
 			print( abs(weight.sum(1)) / abs(weight.sum(1).max() ) / 9 )
 		if isinstance(m, nn.BatchNorm2d):
-			print(m.weight)
-			
+			#print(m.weight)
+			pass
 def main():
 	args = parser.parse_args()
 	model  = SENet.se_resnet152(num_classes=365)
