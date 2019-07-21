@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser(description='PyTorch Places365')
 parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
 
-device_ids = [0,1,2,3]
+device_ids = [2,3]
 model  = SENet.se_resnet(365)
 
 def checkConvParameter(model):
