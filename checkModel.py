@@ -40,14 +40,14 @@ if args.resume:
 	else:
 		print("=> no checkpoint found at '{}'".format(args.resume))
 		return
-    else:
-        print(model)
+	else:
+		print(model)
 
 def checkConvParameter(model):
-    for m in model.modules():
-        if isinstance(m, nn.Conv2d) and m.kernel_size == (3,3):
-            kernelsNum, inplanes, w, h = m.weight.shape
-            weight = m.weight.view(kernelsNum, inplanes*w*h).abs()
-            print( abs(weight.sum(1)) / abs(weight.sum(1).max() )  )
+	for m in model.modules():
+		if isinstance(m, nn.Conv2d) and m.kernel_size == (3,3):
+			kernelsNum, inplanes, w, h = m.weight.shape
+			weight = m.weight.view(kernelsNum, inplanes*w*h).abs()
+			print( abs(weight.sum(1)) / abs(weight.sum(1).max() )  )
 
 checkConvParameter(model)
