@@ -40,8 +40,9 @@ def checkConvParameter(model):
 			kernelsNum, inplanes, w, h = m.weight.shape
 			m.weight.permute(1,0,2,3)
 			weight = m.weight.view(inplanes, kernelsNum*w*h).abs()
-			print( abs(weight.sum(1)) / abs(weight.sum(1).max() )  )
-		
+			#print( abs(weight.sum(1)) / abs(weight.sum(1).max() )  )
+		if isinstance(m, nn.BatchNorm2d):
+			print(m.weight)
 			
 def main():
 	args = parser.parse_args()
