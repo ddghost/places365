@@ -19,13 +19,13 @@ import pdb
 import SENet
 import progressbar
 
-parser = argparse.ArgumentParser(description='PyTorch Places365 Training')
+parser = argparse.ArgumentParser(description='PyTorch Places365')
 parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
 
 device_ids = [0,1,2,3]
 model  = SENet.se_resnet(365)
-model.load_state_dict(checkpoint['state_dict'])
+
 
 if args.resume:
 	if os.path.isfile(args.resume):
@@ -41,6 +41,7 @@ if args.resume:
 		print("=> no checkpoint found at '{}'".format(args.resume))
 else:
 	print(model)
+model.load_state_dict(checkpoint['state_dict'])
 
 def checkConvParameter(model):
 	for m in model.modules():
