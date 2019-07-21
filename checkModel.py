@@ -40,8 +40,8 @@ if args.resume:
 	else:
 		print("=> no checkpoint found at '{}'".format(args.resume))
 		return
-	else:
-		print(model)
+else:
+	print(model)
 
 def checkConvParameter(model):
 	for m in model.modules():
