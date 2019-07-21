@@ -19,7 +19,7 @@ import pdb
 import SENet
 import progressbar
 
-
+parser = argparse.ArgumentParser(description='PyTorch Places365 Training')
 parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
 
