@@ -26,28 +26,38 @@ parser.add_argument('--resume', default='', type=str, metavar='PATH',
 device_ids = [0,1,2,3]
 model  = SENet.se_resnet(365)
 
-
-if args.resume:
-	if os.path.isfile(args.resume):
-		print("=> loading checkpoint '{}'".format(args.resume))
-		checkpoint = torch.load(args.resume)
-		args.start_epoch = checkpoint['epoch']
-		best_prec1 = checkpoint['best_prec1']
-		model.load_state_dict(checkpoint['state_dict'])
-		print("=> loaded checkpoint '{}' (epoch {})"
-			  .format(args.resume, checkpoint['epoch']))
-		del checkpoint
-	else:
-		print("=> no checkpoint found at '{}'".format(args.resume))
-else:
-	print(model)
-model.load_state_dict(checkpoint['state_dict'])
-
 def checkConvParameter(model):
 	for m in model.modules():
 		if isinstance(m, nn.Conv2d) and m.kernel_size == (3,3):
 			kernelsNum, inplanes, w, h = m.weight.shape
+			
 			weight = m.weight.view(kernelsNum, inplanes*w*h).abs()
 			print( abs(weight.sum(1)) / abs(weight.sum(1).max() )  )
-
-checkConvParameter(model)
+			
+	print('!!!!!!!!!!!!!!!!!!!!')
+	for m in model.modules():
+		if isinstance(m, nn.Conv2d) and m.kernel_size == (3,3):
+			kernelsNum, inplanes, w, h = m.weight.shape
+			m.weight.permute(1,0,2,3)
+			weight = m.weight.view(inplanes, kernelsNum*w*h).abs()
+			print( abs(weight.sum(1)) / abs(weight.sum(1).max() )  )
+		
+			
+def main():
+	args = parser.parse_args()
+	if args.resume:
+		if os.path.isfile(args.resume):
+			print("=> loading checkpoint '{}'".format(args.resume))
+			checkpoint = torch.load(args.resume)
+			args.start_epoch = checkpoint['epoch']
+			best_prec1 = checkpoint['best_prec1']
+			model.load_state_dict(checkpoint['state_dict'])
+			print("=> loaded checkpoint '{}' (epoch {})"
+				  .format(args.resume, checkpoint['epoch']))
+			del checkpoint
+		else:
+			print("=> no checkpoint found at '{}'".format(args.resume))
+	else:
+		print(model)
+	model.load_state_dict(checkpoint['state_dict'])
+	checkConvParameter(model)
