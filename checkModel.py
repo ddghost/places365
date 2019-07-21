@@ -45,7 +45,7 @@ def checkConvParameter(model):
 			
 def main():
 	args = parser.parse_args()
-
+	
 	if args.resume:
 		if os.path.isfile(args.resume):
 			print("=> loading checkpoint '{}'".format(args.resume))
@@ -61,3 +61,6 @@ def main():
 	else:
 		print(model)
 	checkConvParameter(model)
+	
+if __name__ == '__main__':
+    main()
