@@ -45,6 +45,7 @@ def checkConvParameter(model):
 			
 def main():
 	args = parser.parse_args()
+
 	if args.resume:
 		if os.path.isfile(args.resume):
 			print("=> loading checkpoint '{}'".format(args.resume))
@@ -59,5 +60,4 @@ def main():
 			print("=> no checkpoint found at '{}'".format(args.resume))
 	else:
 		print(model)
-	model.load_state_dict(checkpoint['state_dict'])
 	checkConvParameter(model)
