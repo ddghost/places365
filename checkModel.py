@@ -24,7 +24,7 @@ parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
 
 device_ids = [2,3]
-model  = SENet.se_resnet(365)
+initCuda = torch.device('cuda:2')
 
 def checkConvParameter(model):
 	for m in model.modules():
@@ -44,8 +44,9 @@ def checkConvParameter(model):
 		
 			
 def main():
-	args = parser.parse_args()
-	
+	args = parser.parse_args
+	model  = SENet.se_resnet(365)
+	model = torch.nn.DataParallel(model, device_ids).to(initCuda)
 	if args.resume:
 		if os.path.isfile(args.resume):
 			print("=> loading checkpoint '{}'".format(args.resume))
