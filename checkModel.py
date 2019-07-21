@@ -44,7 +44,7 @@ def checkConvParameter(model):
 		
 			
 def main():
-	args = parser.parse_args
+	args = parser.parse_args()
 	model  = SENet.se_resnet(365)
 	model = torch.nn.DataParallel(model, device_ids).to(initCuda)
 	if args.resume:
