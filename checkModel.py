@@ -40,8 +40,8 @@ def checkConvParameter(model):
 			kernelsNum, inplanes, w, h = m.weight.shape
 			m.weight.permute(1,0,2,3)
 			weight = m.weight.view(inplanes, kernelsNum*w*h).abs()
-			weight = torch.exp( -torch.abs(weight) )
-			print( abs(weight.sum(1))  )
+			weight = torch.log( torch.abs(weight) ) 
+			print( abs(weight.mean(1))  )
 		if isinstance(m, nn.BatchNorm2d):
 			#print(m.weight)
 			pass
