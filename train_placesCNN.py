@@ -63,7 +63,8 @@ parser.add_argument('--pretrained', dest='pretrained', action='store_false',
 parser.add_argument('--num_classes',default=365, type=int, help='num of class in the model')
 parser.add_argument('--dataset',default='places365',help='which dataset to train')
 device_ids = [2,3]
-best_prec1 = 2
+ini_device = 2
+best_prec1 = 0
 
 
 
@@ -89,7 +90,7 @@ def main():
         model.features = torch.nn.DataParallel(model.features, device_ids)
         model.cuda()
     else:
-        model = torch.nn.DataParallel(model, device_ids).cuda()
+        model = torch.nn.DataParallel(model, device_ids).to(ini_device)
 
 
 
