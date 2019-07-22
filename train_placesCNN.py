@@ -88,7 +88,7 @@ def main():
 
     if args.arch.lower().startswith('alexnet') or args.arch.lower().startswith('vgg'):
         model.features = torch.nn.DataParallel(model.features, device_ids)
-        model.cuda()
+        model.to(ini_device)
     else:
         model = torch.nn.DataParallel(model, device_ids).to(ini_device)
 
@@ -140,7 +140,7 @@ def main():
         num_workers=args.workers, pin_memory=True)
     
     # define loss function (criterion) and pptimizer
-    criterion = nn.CrossEntropyLoss().cuda()
+    criterion = nn.CrossEntropyLoss().to(ini_device)
 
     if args.evaluate:
         #validate(val_loader, model, criterion)
