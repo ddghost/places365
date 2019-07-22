@@ -165,7 +165,7 @@ def main():
         
         return
     else:
-        print('??????????????')
+
         optimizer = torch.optim.SGD(model.parameters(), args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
@@ -205,7 +205,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         # measure data loading time
         data_time.update(time.time() - end)
  
-        target = target.cuda(non_blocking=True)
+        target = target.to(ini_device ,non_blocking=True)
         input_var = torch.autograd.Variable(input)
         target_var = torch.autograd.Variable(target)
         # compute output
