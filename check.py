@@ -27,6 +27,7 @@ from PIL import Image
 import pandas as pdb
 import csv
 
+from torchstat import stat
 
 def main():
     model = SENet.se_resnet50(num_classes=365)
