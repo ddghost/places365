@@ -33,7 +33,8 @@ parser.add_argument('data', metavar='DIR',
                     help='path to dataset')
 parser.add_argument('-b', '--batch-size', default=256, type=int,
                     metavar='N', help='mini-batch size (default: 256)')
-
+parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
+                    help='number of data loading workers (default: 4)')
 def main():
     #统计神经网络
     args = parser.parse_args()
