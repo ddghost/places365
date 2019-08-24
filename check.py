@@ -31,9 +31,9 @@ from torchstat import stat
 
 def main():
     model = SENet.se_resnet50(num_classes=365)
-    stat(model, (3, 256, 256))
+    stat(model, (3, 224, 224))
     model = SENet.se_resnet152(num_classes=365)
-    stat(model, (3, 256, 256))
+    stat(model, (3, 224, 224))
 
 if __name__ == '__main__':
     main()
