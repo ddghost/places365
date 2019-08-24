@@ -74,7 +74,7 @@ def main():
         print(time.asctime( time.localtime(time.time()) ))
         for i, (input, target) in enumerate(train_loader):
             input = input.cuda()
-            target = train.cuda()
+            target = target.cuda()
     print(time.asctime( time.localtime(time.time()) ))
 if __name__ == '__main__':
     main()
