@@ -111,7 +111,9 @@ def main():
     
     for epoch in range(args.start_epoch, args.epochs):
         if(args.useNewTrainMethod):
-            trainStage = epoch % 10
+            trainStage = epoch % 10 
+            if(trainStage < 1):
+                pass
             if(trainStage < 2):
                 model.module.frezzeFromShallowToDeep(0)
             elif(trainStage < 4):
