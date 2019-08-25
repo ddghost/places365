@@ -131,7 +131,7 @@ def main():
     optimizer = torch.optim.SGD(model.parameters(), args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
-    for i, para in enumerate(model.module.features.parameters()):
+    for i, para in enumerate(model.module.parameters()):
         print(para)
 
 
