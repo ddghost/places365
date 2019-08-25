@@ -34,10 +34,10 @@ model_names = sorted(name for name in models.__dict__
 parser = argparse.ArgumentParser(description='PyTorch Places365 Training')
 parser.add_argument('data', metavar='DIR',
                     help='path to dataset')
-parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet18',
+parser.add_argument('--arch', '-a', metavar='ARCH', default='seresnet50',
                     help='model architecture: ' +
                         ' | '.join(model_names) +
-                        ' (default: resnet18)')
+                        ' (default: seresnet50)')
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
 parser.add_argument('--epochs', default=200, type=int, metavar='N',
@@ -62,8 +62,8 @@ parser.add_argument('--pretrained', dest='pretrained', action='store_false',
                     help='use pre-trained model')
 parser.add_argument('--num_classes',default=365, type=int, help='num of class in the model')
 parser.add_argument('--dataset',default='places365',help='which dataset to train')
-device_ids = [2,3]
-ini_device = 2
+device_ids = [0]
+ini_device = 0
 best_prec1 = 0
 
 
@@ -77,6 +77,7 @@ def main():
     print("=> creating model '{}'".format(args.arch))
 
     model  = SENet.se_resnet50(num_classes=args.num_classes)
+    model = torch.nn.DataParallel(model, device_ids).cuda()
     # optionally resume from a checkpoint
     if args.resume:
         if os.path.isfile(args.resume):
@@ -130,7 +131,7 @@ def main():
     optimizer = torch.optim.SGD(model.parameters(), args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
-    for i, para in enumerate(model._net.module.features.parameters()):
+    for i, para in enumerate(model.module.features.parameters()):
         print(para)
 
 
