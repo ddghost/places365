@@ -1,5 +1,6 @@
 import torch.nn as nn
 import math
+import torch
 
 def conv3x3(in_planes, out_planes, stride=1):
     """3x3 convolution with padding"""
@@ -235,13 +236,13 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        x = torch.cat([topLeft,topRight,bottomLeft,bottomRight], 1)
+
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
 
-        #x = self.layer1(x)
+        x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
