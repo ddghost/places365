@@ -174,7 +174,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
         target = target.cuda(non_blocking=True)
 
         # compute output
-        output = model(input_var)
+        output = model(input)
         loss = criterion(output, target_var)
 
         # measure accuracy and record loss
