@@ -194,7 +194,7 @@ class ResNet(nn.Module):
 
     def frezzeFromShallowToDeep(self, lastLayer):
         #conv1 0, layer1 1, layer2 2, layer3 3, layer4 4, fc 5
-        for i, para in enumerate(self.model.module.parameters()):
+        for i, para in enumerate(self.parameters()):
             print(para)
         #if(lastLayer >= 0):
             
