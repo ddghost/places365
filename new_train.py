@@ -131,8 +131,7 @@ def main():
     optimizer = torch.optim.SGD(model.parameters(), args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
-    for i, para in enumerate(model.module.parameters()):
-        print(para)
+    model.frezzeFromShallowToDeep(5)
 
 
     '''
