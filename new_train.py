@@ -126,16 +126,16 @@ def main():
     # define loss function (criterion) and pptimizer
     criterion = nn.CrossEntropyLoss().cuda()
 
+    
 
-    #model.module.frezzeFromShallowToDeep(4)
     optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), 
                                 args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
-
+    model.module.frezzeFromShallowToDeep(4)
     for epoch in range(args.start_epoch, args.epochs):
+	
         adjust_learning_rate(optimizer, epoch)
-
             # train for one epoch
         train(train_loader, model, criterion, optimizer, epoch)
             # evaluate on validation set
