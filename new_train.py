@@ -110,7 +110,7 @@ def main():
                                 weight_decay=args.weight_decay)
     
     for epoch in range(args.start_epoch, args.epochs):
-        if(useNewTrainMethod):
+        if(args.useNewTrainMethod):
             trainStage = epoch % 10
             if(trainStage < 2):
                 model.module.frezzeFromShallowToDeep(0)
