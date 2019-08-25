@@ -60,6 +60,8 @@ parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
 parser.add_argument('--pretrained', dest='pretrained', action='store_false',
                     help='use pre-trained model')
+parser.add_argument('--useNewTrainMethod', dest='useNewTrainMethod', action='store_false',
+                    help='use New Train Method')
 parser.add_argument('--num_classes',default=365, type=int, help='num of class in the model')
 parser.add_argument('--dataset',default='places365',help='which dataset to train')
 device_ids = [1]
@@ -97,9 +99,52 @@ def main():
     
     cudnn.benchmark = True
 
+    train_loader, val_loader = getDataLoader(args.data)
+    # define loss function (criterion) and pptimizer
+    criterion = nn.CrossEntropyLoss().cuda()
+
+
+    optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), 
+                                args.lr,
+                                momentum=args.momentum,
+                                weight_decay=args.weight_decay)
+    
+    for epoch in range(args.start_epoch, args.epochs):
+        if(useNewTrainMethod):
+            trainStage = epoch % 10
+            if(trainStage < 2):
+                model.module.frezzeFromShallowToDeep(0)
+            elif(trainStage < 4):
+                model.module.frezzeFromShallowToDeep(1)
+            elif(trainStage < 6):
+                model.module.frezzeFromShallowToDeep(2)
+            elif(trainStage < 8):
+                model.module.frezzeFromShallowToDeep(3)
+            else:
+                model.module.frezzeFromShallowToDeep(4)
+
+        adjust_learning_rate(optimizer, epoch)
+            # train for one epoch
+        train(train_loader, model, criterion, optimizer, epoch)
+            # evaluate on validation set
+        prec1 = validate(val_loader, model, criterion)
+
+            # remember best prec@1 and save checkpoint
+        is_best = prec1 > best_prec1
+        best_prec1 = max(prec1, best_prec1)
+        save_checkpoint({
+                'epoch': epoch + 1,
+                'arch': args.arch,
+                'state_dict': model.state_dict(),
+                'best_prec1': best_prec1,
+            }, is_best, args.arch.lower())
+
+
+
+def getDataLoader(dataDir):
     # Data loading code
-    traindir = os.path.join(args.data, 'train')
-    valdir = os.path.join(args.data, 'val')
+    traindir = os.path.join(dataDir, 'train')
+    valdir = os.path.join(dataDir, 'val')
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
@@ -122,36 +167,7 @@ def main():
         ])),
         batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
-    
-    # define loss function (criterion) and pptimizer
-    criterion = nn.CrossEntropyLoss().cuda()
-
-    
-
-    optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), 
-                                args.lr,
-                                momentum=args.momentum,
-                                weight_decay=args.weight_decay)
-    model.module.frezzeFromShallowToDeep(4)
-    for epoch in range(args.start_epoch, args.epochs):
-	
-        adjust_learning_rate(optimizer, epoch)
-            # train for one epoch
-        train(train_loader, model, criterion, optimizer, epoch)
-            # evaluate on validation set
-        prec1 = validate(val_loader, model, criterion)
-
-            # remember best prec@1 and save checkpoint
-        is_best = prec1 > best_prec1
-        best_prec1 = max(prec1, best_prec1)
-        '''
-        save_checkpoint({
-                'epoch': epoch + 1,
-                'arch': args.arch,
-                'state_dict': model.state_dict(),
-                'best_prec1': best_prec1,
-            }, is_best, args.arch.lower())
-        '''
+    return train_loader, val_loader
 
 
 def train(train_loader, model, criterion, optimizer, epoch):
