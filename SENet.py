@@ -199,7 +199,7 @@ class ResNet(nn.Module):
         if(lastLayer >= 0):
              for i, para in enumerate(self.conv1.parameters() ):
                 para.requires_grad = False
-             for i, para in enumerate(self.bn.parameters() ):
+             for i, para in enumerate(self.bn1.parameters() ):
                 para.requires_grad = False
 
         if(lastLayer >= 1):
