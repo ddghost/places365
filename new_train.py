@@ -127,7 +127,7 @@ def main():
     criterion = nn.CrossEntropyLoss().cuda()
 
 
-    model.module.frezzeFromShallowToDeep(4)
+    #model.module.frezzeFromShallowToDeep(4)
     optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), 
                                 args.lr,
                                 momentum=args.momentum,
