@@ -34,7 +34,7 @@ model_names = sorted(name for name in models.__dict__
 parser = argparse.ArgumentParser(description='PyTorch Places365 Training')
 parser.add_argument('data', metavar='DIR',
                     help='path to dataset')
-parser.add_argument('--arch', '-a', metavar='ARCH', default='seresnet50',
+parser.add_argument('--arch', '-a', metavar='ARCH', default='seresnet50_new',
                     help='model architecture: ' +
                         ' | '.join(model_names) +
                         ' (default: seresnet50)')
@@ -128,13 +128,12 @@ def main():
 
 
 
-    optimizer = torch.optim.SGD(model.parameters(), args.lr,
+    optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), 
+                                args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
-    model.module.frezzeFromShallowToDeep(5)
+    model.module.frezzeFromShallowToDeep(4)
 
-
-    '''
     for epoch in range(args.start_epoch, args.epochs):
         adjust_learning_rate(optimizer, epoch)
 
@@ -146,13 +145,14 @@ def main():
             # remember best prec@1 and save checkpoint
         is_best = prec1 > best_prec1
         best_prec1 = max(prec1, best_prec1)
+        '''
         save_checkpoint({
                 'epoch': epoch + 1,
                 'arch': args.arch,
                 'state_dict': model.state_dict(),
                 'best_prec1': best_prec1,
             }, is_best, args.arch.lower())
-    '''
+        '''
 
 
 def train(train_loader, model, criterion, optimizer, epoch):

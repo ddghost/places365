@@ -193,11 +193,30 @@ class ResNet(nn.Module):
 
 
     def frezzeFromShallowToDeep(self, lastLayer):
-        #conv1 0, layer1 1, layer2 2, layer3 3, layer4 4, fc 5
+        #conv1 0, layer1 1, layer2 2, layer3 3, layer4 4
         for i, para in enumerate(self.parameters()):
-            print(para)
-        #if(lastLayer >= 0):
-            
+            para.requires_grad = True
+        if(lastLayer >= 0):
+             for i, para in enumerate(self.conv1.parameters() ):
+                para.requires_grad = False
+             for i, para in enumerate(self.bn.parameters() ):
+                para.requires_grad = False
+
+        if(lastLayer >= 1):
+             for i, para in enumerate(self.layer1.parameters() ):
+                para.requires_grad = False
+
+        if(lastLayer >= 2):
+             for i, para in enumerate(self.layer2.parameters() ):
+                para.requires_grad = False
+
+        if(lastLayer >= 3):
+             for i, para in enumerate(self.layer3.parameters() ):
+                para.requires_grad = False
+
+        if(lastLayer >= 4):
+             for i, para in enumerate(self.layer4.parameters() ):
+                para.requires_grad = False
 
     def _make_layer(self, block, planes, blocks, stride=1):
         downsample = None
