@@ -184,6 +184,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
     bar = progressbar.progressbar(len(train_loader))
     end = time.time()
     start = time.perf_counter()
+    optimizer.zero_grad()
     for i, (input, target) in enumerate(train_loader):
         # measure data loading time
         data_time.update(time.time() - end)
@@ -201,10 +202,10 @@ def train(train_loader, model, criterion, optimizer, epoch):
         top5.update(prec5.item(), input.size(0))
 
         # compute gradient and do SGD step
-        optimizer.zero_grad()
+
         loss.backward()
         optimizer.step()
-
+        optimizer.zero_grad()
         # measure elapsed time
         batch_time.update(time.time() - end)
         end = time.time()
