@@ -114,7 +114,7 @@ def main():
             trainStage = epoch % 10 
             if(trainStage < 1):
                 pass
-            if(trainStage < 2):
+            elif(trainStage < 2):
                 model.module.frezzeFromShallowToDeep(0)
             elif(trainStage < 4):
                 model.module.frezzeFromShallowToDeep(1)
