@@ -60,7 +60,7 @@ parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
 parser.add_argument('--pretrained', dest='pretrained', action='store_false',
                     help='use pre-trained model')
-parser.add_argument('--useNewTrainMethod', dest='useNewTrainMethod', action='store_false',
+parser.add_argument('--useNewTrainMethod', dest='useNewTrainMethod', action='store_true',
                     help='use New Train Method')
 parser.add_argument('--num_classes',default=365, type=int, help='num of class in the model')
 parser.add_argument('--dataset',default='places365',help='which dataset to train')
@@ -103,16 +103,14 @@ def main():
     # define loss function (criterion) and pptimizer
     criterion = nn.CrossEntropyLoss().cuda()
 
-
-    optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), 
+    for epoch in range(args.start_epoch, args.epochs):
+        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), 
                                 args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
-    
-    for epoch in range(args.start_epoch, args.epochs):
         if(args.useNewTrainMethod):
             trainStage = epoch % 10 
-            if(trainStage < 1):
+            if(trainStage < 0):
                 pass
             elif(trainStage < 2):
                 model.module.frezzeFromShallowToDeep(0)
@@ -184,7 +182,7 @@ def train(train_loader, model, criterion, optimizer, epoch):
     bar = progressbar.progressbar(len(train_loader))
     end = time.time()
     start = time.perf_counter()
-    optimizer.zero_grad()
+
     for i, (input, target) in enumerate(train_loader):
         # measure data loading time
         data_time.update(time.time() - end)
@@ -202,10 +200,10 @@ def train(train_loader, model, criterion, optimizer, epoch):
         top5.update(prec5.item(), input.size(0))
 
         # compute gradient and do SGD step
-
+        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        optimizer.zero_grad()
+
         # measure elapsed time
         batch_time.update(time.time() - end)
         end = time.time()
