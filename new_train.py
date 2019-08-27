@@ -104,25 +104,25 @@ def main():
     criterion = nn.CrossEntropyLoss().cuda()
 
     for epoch in range(args.start_epoch, args.epochs):
+
+        if(args.useNewTrainMethod):
+            trainStage = epoch % 10 
+            if(trainStage < 2):
+                model.module.frezzeFromShallowToDeep(-1)
+            elif(trainStage < 3):
+                model.module.frezzeFromShallowToDeep(0)
+            elif(trainStage < 5):
+                model.module.frezzeFromShallowToDeep(1)
+            elif(trainStage < 7):
+                model.module.frezzeFromShallowToDeep(2)
+            elif(trainStage < 9):
+                model.module.frezzeFromShallowToDeep(3)
+            else:
+                model.module.frezzeFromShallowToDeep(4)
         optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), 
                                 args.lr,
                                 momentum=args.momentum,
                                 weight_decay=args.weight_decay)
-        if(args.useNewTrainMethod):
-            trainStage = epoch % 10 
-            if(trainStage < 0):
-                pass
-            elif(trainStage < 2):
-                model.module.frezzeFromShallowToDeep(0)
-            elif(trainStage < 4):
-                model.module.frezzeFromShallowToDeep(1)
-            elif(trainStage < 6):
-                model.module.frezzeFromShallowToDeep(2)
-            elif(trainStage < 8):
-                model.module.frezzeFromShallowToDeep(3)
-            else:
-                model.module.frezzeFromShallowToDeep(4)
-
         adjust_learning_rate(optimizer, epoch)
             # train for one epoch
         train(train_loader, model, criterion, optimizer, epoch)
