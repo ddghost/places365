@@ -38,13 +38,12 @@ parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
 def main():
     #统计神经网络
     args = parser.parse_args()
-    '''
+
     model = SENet.se_resnet50(num_classes=365)
     stat(model, (3, 224, 224))
     model = SENet.se_resnet152(num_classes=365)
     stat(model, (3, 224, 224))
     '''
-
     traindir = os.path.join(args.data, 'train')
     valdir = os.path.join(args.data, 'val')
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -69,12 +68,8 @@ def main():
         ])),
         batch_size=args.batch_size, shuffle=False,
         num_workers=args.workers, pin_memory=True)
-    
-    for _ in range(5):
-        print(time.asctime( time.localtime(time.time()) ))
-        for i, (input, target) in enumerate(train_loader):
-            input = input.cuda()
-            target = target.cuda()
+    '''
+
     print(time.asctime( time.localtime(time.time()) ))
 if __name__ == '__main__':
     main()
