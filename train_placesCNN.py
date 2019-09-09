@@ -72,6 +72,7 @@ def main():
     global args, best_prec1
     args = parser.parse_args()
     print(args)
+    torch.cuda.set_device(ini_device)
     # create model
     print("=> creating model '{}'".format(args.arch))
     if args.arch.lower().startswith('wideresnet'):
