@@ -298,7 +298,7 @@ def se_resnet(pretrained=False, **kwargs):
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
     """
-    model = ResNet(newBottleneck, [2, 6, 27, 2], **kwargs)
+    model = ResNet(SEBottleneck, [2, 2, 2, 2], **kwargs)
     if pretrained:
         pass
         #model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
