@@ -78,8 +78,6 @@ def main():
         # a customized resnet model with last feature map size as 14x14 for better class activation mapping
         model  = wideresnet.resnet50(num_classes=args.num_classes)
     elif args.arch.lower().startswith('se'):
-        model  = SENet.se_resnet50(num_classes=args.num_classes)
-    elif args.arch.lower().startswith('new'):
         model  = SENet.se_resnet(num_classes=args.num_classes)
     else:
         model = models.__dict__[args.arch](num_classes=args.num_classes)
