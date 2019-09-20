@@ -146,13 +146,13 @@ class ResNet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
-        downUpSample1 = downUpSample(256, 64)
+        self.downUpSample1 = downUpSample(256, 32)
     
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
-        downUpSample2 = downUpSample(512, 128)
+        self.downUpSample2 = downUpSample(512, 64)
         
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
-        downUpSample3 = downUpSample(1024, 256)
+        self.downUpSample3 = downUpSample(1024, 128)
         
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
