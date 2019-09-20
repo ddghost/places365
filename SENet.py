@@ -127,7 +127,7 @@ class downUpSample(nn.Module):
             )
         self.upSample = nn.Sequential(
                 conv1x1(midplane, inplane, stride=1),
-                nn.BatchNorm2d(midplane),
+                nn.BatchNorm2d(inplane),
             )
     def forward(self, x):
         x = self.downSample(x)
