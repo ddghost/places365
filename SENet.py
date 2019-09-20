@@ -121,17 +121,17 @@ class newBottleneck(nn.Module):
 class downUpSample(nn.Module):
     def __init__(self, inplane, midplane):
         super(downUpSample, self).__init__()
-        downSample = nn.Sequential(
+        self.downSample = nn.Sequential(
                 conv1x1(inplane, midplane, stride=1),
                 nn.BatchNorm2d(midplane),
             )
-        upSample = nn.Sequential(
+        self.upSample = nn.Sequential(
                 conv1x1(midplane, inplane, stride=1),
                 nn.BatchNorm2d(midplane),
             )
     def forward(self, x):
-        x = downSample(x)
-        x = upSample(x)
+        x = self.downSample(x)
+        x = self.upSample(x)
 
         return out
 
