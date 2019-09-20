@@ -118,43 +118,20 @@ class newBottleneck(nn.Module):
 
         return out
 		
-class SEBottleneckK5(nn.Module):
-    expansion = 4
-
-    def __init__(self, inplanes, planes, stride=1, downsample=None, reduction=16):
-        super(SEBottleneckK5, self).__init__()
-        self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(planes, planes, kernel_size=5, stride=stride,
-                               padding=2, bias=False)
-        self.bn2 = nn.BatchNorm2d(planes)
-        self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
-        self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = nn.ReLU(inplace=True)
-        self.se = SELayer(planes * 4, reduction)
-        self.downsample = downsample
-        self.stride = stride
-
+class downUpSample(nn.Module):
+    def __init__(self, inplane, midplane):
+        super(downUpSample, self).__init__()
+        downSample = nn.Sequential(
+                conv1x1(inplane, midplane, stride=1),
+                nn.BatchNorm2d(midplane),
+            )
+        upSample = nn.Sequential(
+                conv1x1(midplane, inplane, stride=1),
+                nn.BatchNorm2d(midplane),
+            )
     def forward(self, x):
-        residual = x
-
-        out = self.conv1(x)
-        out = self.bn1(out)
-        out = self.relu(out)
-
-        out = self.conv2(out)
-        out = self.bn2(out)
-        out = self.relu(out)
-
-        out = self.conv3(out)
-        out = self.bn3(out)
-        out = self.se(out)
-
-        if self.downsample is not None:
-            residual = self.downsample(x)
-
-        out += residual
-        out = self.relu(out)
+        x = downSample(x)
+        x = upSample(x)
 
         return out
 
@@ -169,8 +146,14 @@ class ResNet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
+        downUpSample1 = downUpSample(256, 64)
+    
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
+        downUpSample2 = downUpSample(512, 128)
+        
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
+        downUpSample3 = downUpSample(1024, 256)
+        
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(512 * block.expansion, num_classes)
@@ -192,7 +175,8 @@ class ResNet(nn.Module):
                 elif isinstance(m, BasicBlock):
                     nn.init.constant_(m.bn2.weight, 0)
 
-
+        
+        
     def frezzeFromShallowToDeep(self, lastLayer):
         #conv1 0, layer1 1, layer2 2, layer3 3, layer4 4
         for i, para in enumerate(self.parameters()):
@@ -241,17 +225,57 @@ class ResNet(nn.Module):
         x = self.bn1(x)
         x = self.relu(x)
         x = self.maxpool(x)
+       
 
         x = self.layer1(x)
+        x = self.downUpSample1(x)
+        
         x = self.layer2(x)
+        x = self.downUpSample2(x)
+        
         x = self.layer3(x)
+        x = self.downUpSample3(x)
+        
         x = self.layer4(x)
+
 
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
+              
+        
         return x
 
+    
+    def getParameters(self, featurePos):
+        result_params = None
+        
+        if(featurePos == 0):
+            conv_params = list(map(id, self.conv1.parameters()))
+            bn_params = list(map(id, self.bn1.parameters()))
+            result_params = filter(lambda p: id(p) in conv_params + bn_params , self.parameters())
+        elif(featurePos == 1):
+            layer1_params = list(map(id, self.layer1.parameters()))
+            result_params = filter(lambda p: id(p) in layer1_params, self.parameters())
+            
+        elif(featurePos == 2):
+            layer2_params = list(map(id, self.layer2.parameters()))
+            result_params = filter(lambda p: id(p) in layer2_params, self.parameters())
+            
+        elif(featurePos == 3):
+            layer3_params = list(map(id, self.layer3.parameters()))
+            result_params = filter(lambda p: id(p) in layer3_params, self.parameters())
+            
+        elif(featurePos == 4):
+            layer4_params = list(map(id, self.layer4.parameters()))
+            result_params = filter(lambda p: id(p) in layer4_params, self.parameters())
+            
+        elif(featurePos == 5):
+            fc_params = list(map(id, self.fc.parameters()))
+            result_params = filter(lambda p: id(p) in fc_params, self.parameters())
+         
+        return result_params
+    
 def se_resnet50(pretrained=False, **kwargs):
     """Constructs a ResNet-50 model.
 

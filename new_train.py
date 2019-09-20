@@ -40,7 +40,8 @@ parser.add_argument('--arch', '-a', metavar='ARCH', default='seresnet50_new',
                         ' (default: seresnet50)')
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('--epochs', default=200, type=int, metavar='N',
+
+parser.add_argument('--epochs', default=70, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
@@ -60,13 +61,72 @@ parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
 parser.add_argument('--pretrained', dest='pretrained', action='store_false',
                     help='use pre-trained model')
-parser.add_argument('--useNewTrainMethod', dest='useNewTrainMethod', action='store_true',
-                    help='use New Train Method')
 parser.add_argument('--num_classes',default=365, type=int, help='num of class in the model')
 parser.add_argument('--dataset',default='places365',help='which dataset to train')
-device_ids = [2,3]
-ini_device = 2
+device_ids = [0]
+ini_device = 0
 best_prec1 = 0
+
+
+class optimizerController(object):
+    def __init__(self, net, trainEpoches, iniLr=1e-1, finalLr=1e-4):
+        self.trainEpoches = trainEpoches
+        if(hasattr(net, 'module') ):
+            model = net.module
+        else:
+            model = net
+        
+        self.modelOptimiazer = torch.optim.SGD(model.parameters(), lr=finalLr, momentum=0.9, weight_decay=1e-4)
+        self.optimizer0 = torch.optim.SGD(model.getParameters(0), lr=iniLr, momentum=0.9, weight_decay=1e-4) 
+        self.optimizer1 = torch.optim.SGD(model.getParameters(1), lr=iniLr, momentum=0.9, weight_decay=1e-4) 
+        self.optimizer2 = torch.optim.SGD(model.getParameters(2), lr=iniLr, momentum=0.9, weight_decay=1e-4) 
+        self.optimizer3 = torch.optim.SGD(model.getParameters(3), lr=iniLr, momentum=0.9, weight_decay=1e-4) 
+        self.optimizer4 = torch.optim.SGD([{'params':  model.getParameters(4)},
+                                    {'params':  model.getParameters(5)} ], 
+                                    lr=iniLr, momentum=0.9, weight_decay=1e-4) 
+        
+        self.scheduler0 = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer0, T_max=trainEpoches[0],eta_min=finalLr)
+        self.scheduler1 = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer1, T_max=trainEpoches[1],eta_min=finalLr)
+        self.scheduler2 = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer2, T_max=trainEpoches[2],eta_min=finalLr)
+        self.scheduler3 = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer3, T_max=trainEpoches[3],eta_min=finalLr)
+        self.scheduler4 = torch.optim.lr_scheduler.CosineAnnealingLR(self.optimizer4, T_max=trainEpoches[4],eta_min=finalLr)
+        
+    def optimizerStep(self, epoch):
+        if(epoch < self.trainEpoches[0] ):
+            self.optimizer0.step()
+        if(epoch < self.trainEpoches[1]):
+            self.optimizer1.step()
+        if(epoch < self.trainEpoches[2]):
+            self.optimizer2.step()
+        if(epoch < self.trainEpoches[3]):
+            self.optimizer3.step()
+            
+        if(epoch < self.trainEpoches[4]):
+            self.optimizer4.step()
+        else:
+            self.modelOptimiazer.step()
+            
+    def optimizerZero_grad(self, epoch):
+        if(epoch < self.trainEpoches[0] ):
+            self.optimizer0.zero_grad()
+        if(epoch < self.trainEpoches[1]):
+            self.optimizer1.zero_grad()
+        if(epoch < self.trainEpoches[2]):
+            self.optimizer2.zero_grad()
+        if(epoch < self.trainEpoches[3]):
+            self.optimizer3.zero_grad()
+            
+        if(epoch < self.trainEpoches[4]):
+            self.optimizer4.zero_grad()
+        else:
+            self.modelOptimiazer.zero_grad()        
+     
+    def schedulerStep(self):
+        self.scheduler0.step()
+        self.scheduler1.step()
+        self.scheduler2.step()
+        self.scheduler3.step()
+        self.scheduler4.step()
 
 
 
@@ -97,47 +157,55 @@ def main():
     else:
         print(model)
     
+    
+    
+    
     cudnn.benchmark = True
 
     train_loader, val_loader = getDataLoader(args.data)
     # define loss function (criterion) and pptimizer
     criterion = nn.CrossEntropyLoss().cuda()
-
+    
+    
+    if args.evaluate:
+        print(validate(val_loader, model, criterion))
+        return
+        
+        
+    #trainEpoch = [4,8,16,32,64]
+    trainEpoch = [64,64,64,64,64]
+    opController = optimizerController(model, trainEpoch, iniLr=1e-1, finalLr=1e-4)
     for epoch in range(args.start_epoch, args.epochs):
-
-        if(args.useNewTrainMethod):
-            trainStage = epoch % 10 
-            if(trainStage < 2):
-                model.module.frezzeFromShallowToDeep(-1)
-            elif(trainStage < 3):
-                model.module.frezzeFromShallowToDeep(0)
-            elif(trainStage < 5):
-                model.module.frezzeFromShallowToDeep(1)
-            elif(trainStage < 7):
-                model.module.frezzeFromShallowToDeep(2)
-            elif(trainStage < 9):
-                model.module.frezzeFromShallowToDeep(3)
-            else:
-                model.module.frezzeFromShallowToDeep(4)
-        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), 
-                                args.lr,
-                                momentum=args.momentum,
-                                weight_decay=args.weight_decay)
-        adjust_learning_rate(optimizer, epoch)
             # train for one epoch
-        train(train_loader, model, criterion, optimizer, epoch)
+            
+            
+        if(trainEpoch[0] <= epoch and epoch < trainEpoch[1]):
+            model.module.frezzeFromShallowToDeep(0)
+        elif(trainEpoch[1] <= epoch and epoch < trainEpoch[2]):
+            model.module.frezzeFromShallowToDeep(1)
+        elif(trainEpoch[2] <= epoch and epoch < trainEpoch[3]):
+            model.module.frezzeFromShallowToDeep(2)
+        elif(trainEpoch[3] <= epoch and epoch < trainEpoch[4]):
+            model.module.frezzeFromShallowToDeep(3)
+        else:
+            model.module.frezzeFromShallowToDeep(-1)
+            
+        train(train_loader, model, criterion, opController, epoch)
+        opController.schedulerStep()
             # evaluate on validation set
         prec1 = validate(val_loader, model, criterion)
 
             # remember best prec@1 and save checkpoint
         is_best = prec1 > best_prec1
         best_prec1 = max(prec1, best_prec1)
+        
         save_checkpoint({
                 'epoch': epoch + 1,
                 'arch': args.arch,
                 'state_dict': model.state_dict(),
                 'best_prec1': best_prec1,
             }, is_best, args.arch.lower())
+       
 
 
 
@@ -170,7 +238,7 @@ def getDataLoader(dataDir):
     return train_loader, val_loader
 
 
-def train(train_loader, model, criterion, optimizer, epoch):
+def train(train_loader, model, criterion, opController, epoch):
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -200,9 +268,9 @@ def train(train_loader, model, criterion, optimizer, epoch):
         top5.update(prec5.item(), input.size(0))
 
         # compute gradient and do SGD step
-        optimizer.zero_grad()
+        opController.optimizerZero_grad(epoch)
         loss.backward()
-        optimizer.step()
+        opController.optimizerStep(epoch)
 
         # measure elapsed time
         batch_time.update(time.time() - end)
