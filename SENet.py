@@ -133,7 +133,7 @@ class downUpSample(nn.Module):
         x = self.downSample(x)
         x = self.upSample(x)
 
-        return out
+        return x
 
 class ResNet(nn.Module):
 
