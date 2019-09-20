@@ -173,7 +173,7 @@ def main():
         
         
     #trainEpoch = [4,8,16,32,64]
-    trainEpoch = [64,64,64,64,64]
+    trainEpoch = [40,40,40,40,40]
     opController = optimizerController(model, trainEpoch, iniLr=1e-1, finalLr=1e-4)
     for epoch in range(args.start_epoch, args.epochs):
             # train for one epoch
